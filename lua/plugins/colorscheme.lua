@@ -1,51 +1,105 @@
-local colorscheme = {
-  {
-    "navarasu/onedark.nvim",
-    priority = 1000, -- Ensure it loads first
-    config = function()
-      require("onedark").setup({
-        -- Main options --
-        style = "dark", -- Default theme style. Choose between 'dark', 'darker', 'cool', 'deep', 'warm', 'warmer' and 'light'
-        transparent = false, -- Show/hide background
-        term_colors = true, -- Change terminal color as per the selected theme style
-        ending_tildes = false, -- Show the end-of-buffer tildes. By default they are hidden
-        cmp_itemkind_reverse = false, -- reverse item kind highlights in cmp menu
+local onedarkpro = {
 
-        -- toggle theme style ---
-        toggle_style_key = nil, -- keybind to toggle theme style. Leave it nil to disable it, or set it to a string, for example "<leader>ts"
-        toggle_style_list = { "dark", "darker", "cool", "deep", "warm", "warmer", "light" }, -- List of styles to toggle between
+  "olimorris/onedarkpro.nvim",
+  priority = 1000, -- Ensure it loads first
+  config = function()
+    require("onedarkpro").setup({
+      colors = {
+        cursorline = "#2f334d", -- This is optional. The default cursorline color is based on the background
+      }, -- Override default colors or create your own
+      highlights = {}, -- Override default highlight groups or create your own
+      styles = {
+        types = "NONE",
+        methods = "NONE",
+        numbers = "NONE",
+        strings = "NONE",
+        comments = "italic",
+        keywords = "bold,italic",
+        constants = "NONE",
+        functions = "italic",
+        operators = "NONE",
+        variables = "NONE",
+        parameters = "NONE",
+        conditionals = "italic",
+        virtual_text = "NONE",
+      },
+      filetypes = { -- Override which filetype highlight groups are loaded
+        all = true,
+        c = true,
+        comment = true,
+        go = true,
+        html = true,
+        java = true,
+        javascript = true,
+        json = true,
+        lua = true,
+        markdown = true,
+        php = true,
+        python = true,
+        ruby = true,
+        rust = true,
+        scss = true,
+        toml = true,
+        typescript = true,
+        typescriptreact = true,
+        vue = true,
+        xml = true,
+        yaml = true,
+      },
+      plugins = { -- Override which plugin highlight groups are loaded
+        aerial = true,
+        barbar = true,
+        codecompanion = true,
+        copilot = true,
+        dashboard = true,
+        flash_nvim = true,
+        gitsigns = true,
+        hop = true,
+        indentline = true,
+        leap = true,
+        lsp_saga = true,
+        lsp_semantic_tokens = true,
+        marks = true,
+        mini_indentscope = true,
+        neotest = true,
+        neo_tree = true,
+        nvim_cmp = true,
+        nvim_bqf = true,
+        nvim_dap = true,
+        nvim_dap_ui = true,
+        nvim_hlslens = true,
+        nvim_lsp = true,
+        nvim_navic = true,
+        nvim_notify = true,
+        nvim_tree = true,
+        nvim_ts_rainbow = true,
+        op_nvim = true,
+        packer = true,
+        persisted = true,
+        polygot = true,
+        rainbow_delimiters = true,
+        render_markdown = true,
+        startify = true,
+        telescope = true,
+        toggleterm = true,
+        treesitter = true,
+        trouble = true,
+        vim_ultest = true,
+        which_key = true,
+        vim_dadbod_ui = true,
+      },
 
-        -- Change code style ---
-        -- Options are italic, bold, underline, none
-        -- You can configure multiple style with comma separated, For e.g., keywords = 'italic,bold'
-        code_style = {
-          comments = "italic",
-          keywords = "none",
-          functions = "none",
-          strings = "none",
-          variables = "none",
-        },
-
-        -- Lualine options --
-        lualine = {
-          transparent = false, -- lualine center bar transparency
-        },
-
-        -- Custom Highlights --
-        colors = {}, -- Override default colors
-        highlights = {}, -- Override highlight groups
-
-        -- Plugins Config --
-        diagnostics = {
-          darker = true, -- darker colors for diagnostic
-          undercurl = true, -- use undercurl instead of underline for diagnostics
-          background = true, -- use background color for virtual text
-        },
-      })
-      -- vim.cmd("colorscheme onedark")
-      require("onedark").load()
-    end,
-  },
+      options = {
+        cursorline = true, -- Use cursorline highlighting?
+        transparency = false, -- Use a transparent background?
+        terminal_colors = true, -- Use the theme's colors for Neovim's :terminal?
+        lualine_transparency = false, -- Center bar transparency?
+        highlight_inactive_windows = false, -- When the window is out of focus, change the normal background?
+      },
+    })
+    -- require("onedarkpro").load()
+    vim.cmd("colorscheme onedark")
+  end,
 }
 
-return colorscheme
+return onedarkpro

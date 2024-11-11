@@ -60,13 +60,6 @@ map(
 )
 
 -- terminal
-map("t", "<C-x>", "<C-\\><C-N>", { desc = "terminal escape terminal mode" })
-
--- new terminals
-map("n", "<leader>v", function()
-  require("nvchad.term").new({ pos = "vsp" })
-end, { desc = "terminal new vertical term" })
-
 map("n", "<A-h>", function()
-  LazyVim.terminal()
+  vim.cmd("ToggleTerm direction=horizontal")
 end, { desc = "Terminal (cwd)" })
