@@ -9,3 +9,4 @@ local check_module = require("utils.check")
 
 clipboard.setup()
 check_module.check()
+system.setup()

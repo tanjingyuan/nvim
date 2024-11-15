@@ -15,4 +15,10 @@ function M.paste()
   }
 end
 
+function M.setup()
+  if M.is_remote() then
+    vim.g.autoformat = false
+  end
+end
+
 return M
