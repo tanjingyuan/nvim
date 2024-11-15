@@ -39,10 +39,10 @@ return {
     --   highlight MatchParen cterm=bold ctermbg=red guibg=lightyellow
     -- ]])
     -- vim.cmd([[
-    --   highlight MatchParen cterm=bold guibg=lightyellow
+    --   highlight MatchParen cterm=NONE,bold gui=NONE,bold ctermfg=15 guifg=#fdf6e3 ctermbg=12 guibg=#839496
     -- ]])
     vim.cmd([[
-      highlight MatchParen cterm=NONE,bold gui=NONE,bold ctermfg=15 guifg=#fdf6e3 ctermbg=12 guibg=#839496
+      highlight MatchParen guifg=#fdf6e3 ctermbg=12 guibg=#839496
     ]])
   end,
 }
