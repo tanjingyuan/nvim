@@ -30,6 +30,19 @@ function M.setup()
         ["*"] = system.paste,
       },
     }
+  elseif system.is_mac() then
+    vim.g.clipboard = {
+      name = "macOSClipboard",
+      copy = {
+        ["+"] = "pbcopy",
+        ["*"] = "pbcopy",
+      },
+      paste = {
+        ["+"] = "pbpaste",
+        ["*"] = "pbpaste",
+      },
+      cache_enabled = 0,
+    }
   else
     -- 默认配置，可以是 xclip 或其他
     vim.g.clipboard = {

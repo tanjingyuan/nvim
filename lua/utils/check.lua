@@ -7,6 +7,8 @@ function M.check()
   vim.api.nvim_create_user_command("Checkwsl", function()
     if system.is_wsl() then
       print("This is a WSL session")
+    elseif system.is_mac() then
+      print("This is a Mac session")
     else
       print("This is a local session")
     end
