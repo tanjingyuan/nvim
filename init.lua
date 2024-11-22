@@ -6,7 +6,9 @@ vim.o.termguicolors = true
 local system = require("utils.system")
 local clipboard = require("utils.clipboard")
 local check_module = require("utils.check")
+local highlight = require("utils.highlight")
 
 clipboard.setup()
 check_module.check()
 system.setup()
+highlight.setup()
