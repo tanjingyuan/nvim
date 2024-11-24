@@ -32,9 +32,9 @@ map("n", "<leader>/", "gcc", { desc = "toggle comment", remap = true })
 map("v", "<leader>/", "gc", { desc = "toggle comment", remap = true })
 
 -- nvimtree
-vim.keymap.set("n", "<C-n>", function()
-  require("neo-tree.command").execute({ toggle = true, dir = LazyVim.root() })
-end, { desc = "Explorer NeoTree (Root Dir)" })
+-- vim.keymap.set("n", "<C-n>", function()
+--   require("neo-tree.command").execute({ toggle = true, dir = LazyVim.root() })
+-- end, { desc = "Explorer NeoTree (Root Dir)" })
 
 vim.keymap.set("n", "<C-S-n>", function()
   require("neo-tree.command").execute({ toggle = true, dir = vim.uv.cwd() })
