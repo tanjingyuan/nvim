@@ -24,8 +24,8 @@ map("n", "<C-k>", "<C-w>k", { desc = "switch window up" })
 map("n", "<leader>ds", vim.diagnostic.setloclist, { desc = "LSP diagnostic loclist" })
 
 -- tabufline
-map("n", "<tab>", "<cmd>bprevious<cr>", { desc = "next Buffer" })
-map("n", "<S-tab>", "<cmd>bnext<cr>", { desc = "prev Buffer" })
+map("n", "<tab>", "<cmd>bnext<cr>", { desc = "next Buffer" })
+map("n", "<S-tab>", "<cmd>bprevious<cr>", { desc = "prev Buffer" })
 
 -- Comment
 map("n", "<leader>/", "gcc", { desc = "toggle comment", remap = true })

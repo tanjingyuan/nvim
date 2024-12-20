@@ -88,6 +88,23 @@ function M.setup()
     neo_tree_find_workspace_directory,
     { noremap = true, silent = true, desc = "Neo-tree Find workspace directories" }
   )
+
+  vim.api.nvim_create_autocmd("BufUnload", {
+    pattern = "*.bin", -- 检查所有文件
+    callback = function(ev)
+      -- 检查文件类型是否为二进制
+      local is_binary = vim.bo[ev.buf].binary
+
+      if is_binary and vim.b[ev.buf].bigfile then
+        vim.cmd("DoMatchParen")
+        vim.notify(
+          "Reactivated matchparen and syntax for binary file: " .. vim.fn.bufname(ev.buf),
+          vim.log.levels.INFO,
+          { title = "Binary File Closed" }
+        )
+      end
+    end,
+  })
 end
 
 return M
