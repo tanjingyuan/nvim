@@ -67,3 +67,14 @@ map(
 map("n", "<A-h>", function()
   vim.cmd("ToggleTerm direction=horizontal")
 end, { desc = "Terminal (cwd)" })
+
+-- format
+vim.keymap.del({ "v" }, "<leader>cf")
+vim.keymap.set("v", "<leader>cf", "<cmd>lua vim.lsp.buf.format()<CR>")
+
+-- hop
+map("n", "<leader>h", "<cmd>lua require'hop'.hint_lines()<CR>", { desc = "hop line" })
+
+-- diffview
+map("n", "<leader>gdo", "<cmd>DiffviewOpen<CR>", { desc = "diffview open" })
+map("n", "<leader>gdc", "<cmd>DiffviewClose<CR>", { desc = "diffview close" })

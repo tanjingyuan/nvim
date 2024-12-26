@@ -1,7 +1,5 @@
 return {
   "sindrets/diffview.nvim",
-  event = "VeryLazy",
-  requires = "nvim-lua/plenary.nvim",
   config = function()
     local actions = require("diffview.actions")
     require("diffview").setup({
@@ -264,7 +262,7 @@ return {
           },
           {
             "n",
-            "o",
+            "t",
             actions.select_entry,
             { desc = "Open the diff for the selected entry" },
           },
