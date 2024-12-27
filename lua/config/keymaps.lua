@@ -78,3 +78,20 @@ map("n", "<leader>h", "<cmd>lua require'hop'.hint_lines()<CR>", { desc = "hop li
 -- diffview
 map("n", "<leader>gdo", "<cmd>DiffviewOpen<CR>", { desc = "diffview open" })
 map("n", "<leader>gdc", "<cmd>DiffviewClose<CR>", { desc = "diffview close" })
+
+--marks
+-- delete marks
+map("n", "<leader>dm", function()
+  -- 执行第一条命令
+  vim.cmd("delmarks a-z")
+
+  -- 执行第二条命令（这里需要替换为您想要的第二条命令）
+  vim.cmd("delmarks A-Z")
+  vim.cmd("delmarks 0-9")
+
+  -- 执行 wshada!
+  vim.cmd("wshada!")
+
+  -- 可选：显示一个提示消息
+  vim.notify("Marks deleted and shada file updated!")
+end, { desc = "Delete marks and update shada" })
