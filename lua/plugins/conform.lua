@@ -5,7 +5,7 @@ return {
     opts.formatters_by_ft = {
       lua = { "stylua" },
       -- fish = { "fish_indent" },
-      shell = { "shfmt" },
+      sh = { "shfmt" },
       cpp = { "clang-format" },
       c = { "clang-format" },
       cmake = { "cmake-format" },

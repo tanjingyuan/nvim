@@ -70,7 +70,10 @@ end, { desc = "Terminal (cwd)" })
 
 -- format
 vim.keymap.del({ "v" }, "<leader>cf")
-vim.keymap.set("v", "<leader>cf", "<cmd>lua vim.lsp.buf.format()<CR>")
+-- vim.keymap.set("v", "<leader>cf", "<cmd>lua vim.lsp.buf.format()<CR>")
+map("v", "<leader>cf", function()
+  require("conform").format({ async = true, lsp_fallback = true })
+end, { desc = "Format file or range (in visual mode)" })
 
 -- hop
 map("n", "<leader>h", "<cmd>lua require'hop'.hint_lines()<CR>", { desc = "hop line" })
