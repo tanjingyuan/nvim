@@ -85,7 +85,11 @@ return {
         "snippet_forward",
         "fallback",
       },
-      ["<S-Tab>"] = { "fallback" },
+      ["<S-Tab>"] = {
+        function()
+          vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-d>", true, true, true), "n", true)
+        end,
+      },
     },
   },
   ---@param opts blink.cmp.Config | { sources: { compat: string[] } }
