@@ -3,8 +3,6 @@
 -- Add any additional keymaps here
 local map = vim.keymap.set
 
-vim.opt.relativenumber = false
-
 map("n", ";", ":", { noremap = true, silent = false })
 map("n", "<C-q>", ":<leader>bd<CR>", { noremap = true, silent = true })
 
@@ -52,16 +50,17 @@ map("n", "<leader>gt", "<cmd>Telescope git_status<CR>", { desc = "telescope git 
 map("n", "<leader>pt", "<cmd>Telescope terms<CR>", { desc = "telescope pick hidden term" })
 
 -- map("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "telescope find files" })
-map(
-  "n",
-  "<leader>fa",
-  "<cmd>Telescope find_files follow=true no_ignore=true hidden=true<CR>",
-  { desc = "telescope find all files" }
-)
+-- map(
+--   "n",
+--   "<leader>fa",
+--   "<cmd>Telescope find_files follow=true no_ignore=true hidden=true<CR>",
+--   { desc = "telescope find all files" }
+-- )
 
 -- fzf
 -- map('n', '<leader>fw', "<cmd>lua require('fzf-lua').live_grep()<CR>")
 -- map('n', '<leader>ff', "<cmd>lua require('fzf-lua').files()<CR>")
+-- map('n', '<leader>fo', "<cmd>lua require('fzf-lua').oldfiles()<CR>")
 
 -- terminal
 map("n", "<A-h>", function()
@@ -98,3 +97,7 @@ map("n", "<leader>dm", function()
   -- 可选：显示一个提示消息
   vim.notify("Marks deleted and shada file updated!")
 end, { desc = "Delete marks and update shada" })
+
+-- clangd
+map("n", "<leader>gh", "<cmd>ClangdSwitchSourceHeader<CR>", { desc = "Jump to Header" })
+

@@ -13,6 +13,8 @@ local function neo_tree_live_grep()
   })
 end
 
+-- For telescope
+--[[
 local function neo_tree_find_files()
   local path = get_neo_tree_path()
   require("telescope.builtin").find_files({
@@ -45,23 +47,65 @@ local function neo_tree_find_workspace_directory()
     prompt_title = "Find workspace Directories",
   })
 end
+]]
 
+-- fzf
 -- local function neo_tree_live_grep()
 --   local path = get_neo_tree_path()
---   require("fzf-lua").live_grep({ cwd = path })
+--   require("fzf-lua").live_grep({
+--     cwd = path,
+--     prompt_title = "Live Grep in current Neo-tree Path",
+--   })
 -- end
---
--- vim.keymap.set("n", "<leader>fC", neo_tree_live_grep, { noremap = true, silent = true, desc = "Neo-tree Live Grep" })-
 
--- local has_fzf, _ = pcall(require, "fzf-lua")
--- if has_fzf then
---   vim.notify("fzf-lua is installed", vim.log.levels.INFO)
--- else
---   vim.notify("fzf-lua is not installed", vim.log.levels.WARN)
--- end
+local function neo_tree_exact_live_grep()
+  local path = get_neo_tree_path()
+  require("fzf-lua").grep_project({
+    cwd = path,
+    prompt_title = "Live Grep in current Neo-tree Path",
+  })
+end
+
+local function neo_tree_find_files()
+  local path = get_neo_tree_path()
+  require("fzf-lua").files({
+    cwd = path,
+    prompt_title = "Find Files in current Neo-tree Path",
+  })
+end
+
+local function neo_tree_find_workspace_files()
+  require("fzf-lua").files({
+    prompt_title = "Find Files in workspace Neo-tree Path",
+  })
+end
+
+local function neo_tree_find_directory()
+  local path = get_neo_tree_path()
+  require("fzf-lua").files({
+    cwd = path,
+    cmd = "find . -type d",
+    prompt = "Folders> ",
+    prompt_title = "Find current Directories",
+  })
+end
+
+local function neo_tree_find_workspace_directory()
+  require("fzf-lua").files({
+    cmd = "find . -type d",
+    prompt = "Folders> ",
+    prompt_title = "Find current Directories",
+  })
+end
 
 function M.setup()
   vim.keymap.set("n", "<leader>fw", neo_tree_live_grep, { noremap = true, silent = true, desc = "Neo-tree Live Grep" })
+  vim.keymap.set(
+    "n",
+    "<leader>fa",
+    neo_tree_exact_live_grep,
+    { noremap = true, silent = true, desc = "Neo-tree Live Exact Grep" }
+  )
   vim.keymap.set(
     "n",
     "<leader>ff",
@@ -82,6 +126,7 @@ function M.setup()
     neo_tree_find_directory,
     { noremap = true, silent = true, desc = "Neo-tree Find current directories" }
   )
+
   vim.keymap.set(
     "n",
     "<leader>fD",
