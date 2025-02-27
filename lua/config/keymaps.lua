@@ -101,3 +101,10 @@ end, { desc = "Delete marks and update shada" })
 -- clangd
 map("n", "<leader>gh", "<cmd>ClangdSwitchSourceHeader<CR>", { desc = "Jump to Header" })
 
+-- preivew
+map("n", "gp", "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", { desc = "Goto Definition" })
+map("n", "gl", "<cmd>lua require('goto-preview').goto_preview_declaration()<CR>", { desc = "Goto Declaration" })
+map("n", "q", "<cmd>lua require('goto-preview').close_all_win()<CR>", { desc = "Close All" })
+
+-- call graph
+map("n", "<leader>cg", "<cmd>CallGraphR<CR>", { desc = "Generate Call Graph" })

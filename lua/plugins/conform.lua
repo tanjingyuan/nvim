@@ -9,6 +9,7 @@ return {
       cpp = { "clang-format" },
       c = { "clang-format" },
       cmake = { "cmake-format" },
+      yaml = { "yamlfix" },
     }
     return opts
   end,
