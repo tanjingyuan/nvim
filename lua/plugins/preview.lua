@@ -1,6 +1,6 @@
 return {
   "rmagatti/goto-preview",
-  event = "BufEnter",
+  event = { "VeryLazy" },
   config = function()
     -- local function center_preview(bufnr, winnr)
     --   vim.notify("center_preview called")

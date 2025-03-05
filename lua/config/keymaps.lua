@@ -82,8 +82,8 @@ map("n", "<leader>gdo", "<cmd>DiffviewOpen<CR>", { desc = "diffview open" })
 map("n", "<leader>gdc", "<cmd>DiffviewClose<CR>", { desc = "diffview close" })
 
 --marks
--- delete marks
-map("n", "<leader>dm", function()
+-- delete all marks
+map("n", "<leader>dam", function()
   -- 执行第一条命令
   vim.cmd("delmarks a-z")
 
@@ -96,7 +96,29 @@ map("n", "<leader>dm", function()
 
   -- 可选：显示一个提示消息
   vim.notify("Marks deleted and shada file updated!")
-end, { desc = "Delete marks and update shada" })
+end, { desc = "Delete all marks" })
+
+-- delete marks
+-- 获取当前光标的位置
+vim.api.nvim_set_keymap("n", "<leader>dm", "", {
+  noremap = true,
+  silent = true,
+  callback = function()
+    local current_line = vim.fn.line('.')
+    local marks = vim.fn.execute("marks")
+    for line in marks:gmatch("[^\r\n]+") do
+      local mark, lnum = line:match("^%s*(%S)%s+(%d+)")
+      if mark and tonumber(lnum) == current_line then
+        vim.cmd("delmarks " .. mark)
+        vim.cmd("wshada!")
+        vim.notify("Mark '" .. mark .. "' deleted from line " .. current_line .. " and shada file updated!", vim.log.levels.INFO)
+        return
+      end
+    end
+    vim.notify("No mark found on the current line.", vim.log.levels.WARN)
+  end,
+  desc = "Delete current line's mark and update shada"
+})
 
 -- clangd
 map("n", "<leader>gh", "<cmd>ClangdSwitchSourceHeader<CR>", { desc = "Jump to Header" })
@@ -108,3 +130,6 @@ map("n", "q", "<cmd>lua require('goto-preview').close_all_win()<CR>", { desc = "
 
 -- call graph
 map("n", "<leader>cg", "<cmd>CallGraphR<CR>", { desc = "Generate Call Graph" })
+
+--avante
+map("n", "<leader>al", "<cmd>AvanteClear history<CR>", { desc = "Clear Avgante history" })
