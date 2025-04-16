@@ -10,6 +10,7 @@ return {
       c = { "clang-format" },
       cmake = { "cmake-format" },
       yaml = { "yamlfix" },
+      python = { "black" },
     }
     return opts
   end,

@@ -1,6 +1,7 @@
 -- Keymaps are automatically loaded on the VeryLazy event
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 -- Add any additional keymaps here
+local autocmds = require("config.autocmds")
 local map = vim.keymap.set
 
 map("n", ";", ":", { noremap = true, silent = false })
@@ -29,14 +30,35 @@ map("n", "<S-tab>", "<cmd>bprevious<cr>", { desc = "prev Buffer" })
 map("n", "<leader>/", "gcc", { desc = "toggle comment", remap = true })
 map("v", "<leader>/", "gc", { desc = "toggle comment", remap = true })
 
--- nvimtree
--- vim.keymap.set("n", "<C-n>", function()
---   require("neo-tree.command").execute({ toggle = true, dir = LazyVim.root() })
--- end, { desc = "Explorer NeoTree (Root Dir)" })
+-- Cd dir
+vim.keymap.set("n", "<leader>cd", function()
+  -- 获取当前 buffer 的完整路径
+  local buf_name = vim.api.nvim_buf_get_name(0)
+  -- 获取当前 buffer 所在的目录
+  local buf_dir = vim.fn.fnamemodify(buf_name, ":p:h")
 
-vim.keymap.set("n", "<C-S-n>", function()
-  require("neo-tree.command").execute({ toggle = true, dir = vim.uv.cwd() })
-end, { desc = "Explorer NeoTree (cwd)" })
+  -- 打开一个新的终端并 cd 到 buffer 所在目录
+  vim.cmd("ToggleTerm direction=float")
+  -- vim.cmd("ToggleTerm direction=horizontal")
+  vim.cmd("TermExec cmd='cd " .. buf_dir .. "'")
+
+  -- 设置当前终端 buffer 的局部键映射，按 'q' 关闭终端
+  vim.api.nvim_create_autocmd("TermEnter", {
+    pattern = "term://*toggleterm#*",
+    callback = function()
+      -- 设置 ESC 键在终端模式下切换到普通模式
+      vim.api.nvim_buf_set_keymap(0, 't', '<ESC>', [[<C-\><C-n>]], { noremap = true, silent = true })
+      -- 设置 'q' 键在普通模式下关闭终端
+      vim.api.nvim_buf_set_keymap(0, 'n', 'q', [[<cmd>ToggleTerm<CR>]], { noremap = true, silent = true })
+      -- 设置 'i' 键在普通模式下进入插入模式
+      vim.api.nvim_buf_set_keymap(0, 'n', 'i', [[i]], { noremap = true, silent = true })
+
+      -- 设置终端打开时自动进入插入模式
+      vim.cmd("startinsert")
+    end,
+    once = true
+  })
+end, { desc = "Open terminal in current buffer's directory" })
 
 -- telescope
 map("n", "<leader>fW", "<cmd>Telescope live_grep<CR>", { desc = "telescope live grep" })
@@ -111,7 +133,8 @@ vim.api.nvim_set_keymap("n", "<leader>dm", "", {
       if mark and tonumber(lnum) == current_line then
         vim.cmd("delmarks " .. mark)
         vim.cmd("wshada!")
-        vim.notify("Mark '" .. mark .. "' deleted from line " .. current_line .. " and shada file updated!", vim.log.levels.INFO)
+        vim.notify("Mark '" .. mark .. "' deleted from line " .. current_line .. " and shada file updated!",
+          vim.log.levels.INFO)
         return
       end
     end
@@ -133,3 +156,7 @@ map("n", "<leader>cg", "<cmd>CallGraphR<CR>", { desc = "Generate Call Graph" })
 
 --avante
 map("n", "<leader>al", "<cmd>AvanteClear history<CR>", { desc = "Clear Avgante history" })
+
+--project
+map("n", "<leader>pp", "<cmd>ProjectRoot<CR>", { desc = "Project Root" })
+map("n", "<leader>pa", autocmds.add_project, { desc = "Add Project" })
