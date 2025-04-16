@@ -1,6 +1,7 @@
 -- Keymaps are automatically loaded on the VeryLazy event
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 -- Add any additional keymaps here
+local autocmds = require("config.autocmds")
 local map = vim.keymap.set
 
 map("n", ";", ":", { noremap = true, silent = false })
@@ -111,7 +112,8 @@ vim.api.nvim_set_keymap("n", "<leader>dm", "", {
       if mark and tonumber(lnum) == current_line then
         vim.cmd("delmarks " .. mark)
         vim.cmd("wshada!")
-        vim.notify("Mark '" .. mark .. "' deleted from line " .. current_line .. " and shada file updated!", vim.log.levels.INFO)
+        vim.notify("Mark '" .. mark .. "' deleted from line " .. current_line .. " and shada file updated!",
+          vim.log.levels.INFO)
         return
       end
     end
@@ -133,3 +135,7 @@ map("n", "<leader>cg", "<cmd>CallGraphR<CR>", { desc = "Generate Call Graph" })
 
 --avante
 map("n", "<leader>al", "<cmd>AvanteClear history<CR>", { desc = "Clear Avgante history" })
+
+--project
+map("n", "<leader>pp", "<cmd>ProjectRoot<CR>", { desc = "Project Root" })
+map("n", "<leader>pa", autocmds.add_project, { desc = "Add Project" })
