@@ -160,3 +160,19 @@ map("n", "<leader>al", "<cmd>AvanteClear history<CR>", { desc = "Clear Avgante h
 --project
 map("n", "<leader>pp", "<cmd>ProjectRoot<CR>", { desc = "Project Root" })
 map("n", "<leader>pa", autocmds.add_project, { desc = "Add Project" })
+
+--显示空白字符
+map("n", "<leader>uo", function()
+  local list = vim.opt.list:get()
+  if not list then
+    vim.opt.list = true
+    vim.opt.listchars = { tab = '»·', trail = '•', space = '·', eol = '↲', nbsp = '␣' }
+    -- 设置空白字符的高亮颜色
+    vim.cmd("highlight Whitespace guifg=#f38ba8")
+    vim.cmd("highlight SpecialKey guifg=#f5c2e7 gui=bold")
+    vim.notify("显示空白字符已开启", vim.log.levels.INFO)
+  else
+    vim.opt.list = false
+    vim.notify("显示空白字符已关闭", vim.log.levels.INFO)
+  end
+end, { desc = "切换显示空白字符" })
