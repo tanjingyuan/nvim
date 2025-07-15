@@ -8,8 +8,6 @@ return {
         vim.cmd("startinsert!")
       end,
     })
-
-    vim.api.nvim_set_keymap("n", "<A-h>", "<cmd>ToggleTerm<CR>", { noremap = true, silent = true })
   end,
   cmd = "ToggleTerm",
 }
