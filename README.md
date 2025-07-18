@@ -5,9 +5,9 @@ A modern Neovim configuration built on [LazyVim](https://www.lazyvim.org/) with 
 ## Features
 
 - 🚀 **Fast and Modern**: Built on LazyVim with lazy-loading for optimal performance
-- 🎨 **Beautiful UI**: Catppuccin theme with custom highlights (pink cursor inspired by Ram from Re:Zero)
+- 🎨 **Beautiful UI**: Catppuccin theme with custom highlights
 - 🤖 **AI-Powered**: GitHub Copilot integration for intelligent code completion
-- 📁 **Smart Project Management**: Project detection and navigation with project.nvim
+- 📁 **Smart Project Management**: Project detection and navigation
 - 🔧 **Multi-Language Support**: Pre-configured for C/C++, Lua, Python, Shell, and more
 - 📋 **Intelligent Clipboard**: Works seamlessly across WSL, SSH, and native environments
 - 🔍 **Powerful Search**: Telescope and FZF integration for fuzzy finding
@@ -58,63 +58,79 @@ A modern Neovim configuration built on [LazyVim](https://www.lazyvim.org/) with 
 |-----|-------------|
 | `<Space>` | Leader key |
 | `;` | Enter command mode (mapped to `:`) |
+| `<C-q>` | Close current buffer |
 | `<Tab>` | Next buffer |
 | `<S-Tab>` | Previous buffer |
 | `<C-h/j/k/l>` | Navigate windows |
 | `<leader>/` | Toggle comment |
 
-### File Navigation
+### Insert Mode
 
 | Key | Description |
 |-----|-------------|
-| `<leader>ff` | Find files |
-| `<leader>fg` | Live grep |
+| `<C-b>` | Move to beginning of line |
+| `<C-e>` | Move to end of line |
+| `<C-h>` | Move left |
+| `<C-l>` | Move right |
+| `<C-j>` | Move down |
+| `<C-k>` | Move up |
+
+### Telescope
+
+| Key | Description |
+|-----|-------------|
+| `<leader>fW` | Live grep |
 | `<leader>fb` | Find buffers |
-| `<leader>fd` | Find directories |
-| `<leader>e` | Toggle file explorer |
+| `<leader>fh` | Find help tags |
+| `<leader>fm` | Find marks |
+| `<leader>fo` | Find old files |
+| `<leader>fz` | Find in current buffer |
+| `<leader>cm` | Git commits |
+| `<leader>gt` | Git status |
+| `<leader>pt` | Pick hidden terminal |
 
 ### Code Actions
 
 | Key | Description |
 |-----|-------------|
-| `<leader>cf` | Format buffer |
-| `<leader>ca` | Code actions |
-| `<leader>cd` | Line diagnostics |
-| `gd` | Go to definition |
-| `gr` | Go to references |
-| `K` | Hover documentation |
+| `<leader>ds` | LSP diagnostic loclist |
+| `<leader>cf` | Format file or range (in visual mode) |
+| `gp` | Preview definition |
+| `gl` | Preview declaration |
+| `q` | Close all preview windows |
 
 ### Git
 
 | Key | Description |
 |-----|-------------|
-| `<leader>gg` | Lazygit |
-| `<leader>gd` | Diffview |
-| `]h` | Next hunk |
-| `[h` | Previous hunk |
+| `<leader>gdo` | Open Diffview |
+| `<leader>gdc` | Close Diffview |
 
 ### Project Management
 
 | Key | Description |
 |-----|-------------|
-| `<leader>pp` | Switch project |
+| `<leader>pp` | Go to project root |
 | `<leader>pa` | Add project |
 
 ### Terminal
 
 | Key | Description |
 |-----|-------------|
-| `<Alt-h>` | Toggle terminal |
+| `<Alt-h>` | Toggle horizontal terminal |
 | `<leader>cd` | Open terminal in current file's directory |
 
 ### Special Features
 
 | Key | Description |
 |-----|-------------|
-| `<leader>uo` | Toggle whitespace visibility |
-| `s` | Hop to character |
+| `<leader>h` | Hop to line |
+| `<leader>dam` | Delete all marks |
+| `<leader>dm` | Delete mark on current line |
 | `<leader>gh` | Switch between header/source (C/C++) |
 | `<leader>cg` | Generate call graph (C/C++) |
+| `<leader>uo` | Toggle whitespace visibility |
+| `<leader>al` | Clear Avante history |
 
 ## Plugin Highlights
 

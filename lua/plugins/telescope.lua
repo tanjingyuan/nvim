@@ -26,6 +26,47 @@ return {
         end)
       end,
     },
+    -- 添加 project.nvim 作为依赖
+    {
+      "ahmedkhalf/project.nvim",
+      config = function()
+        require("project_nvim").setup({
+          -- 检测项目的方法
+          detection_methods = { "lsp", "pattern" },
+          -- 项目根目录的标识文件
+          patterns = {
+            ".git",
+            "_darcs",
+            ".hg",
+            ".bzr",
+            ".svn",
+            "Makefile",
+            "package.json",
+            "pom.xml",
+            "Cargo.toml",
+            "go.mod",
+            "requirements.txt",
+            "setup.py",
+            "pyproject.toml",
+            "composer.json",
+          },
+          -- 忽略的目录
+          exclude_dirs = {
+            "~/.cargo/*",
+            "~/.npm/*",
+            "~/.cache/*",
+          },
+          -- 当离开项目时是否显示隐藏的文件
+          show_hidden = true,
+          -- 当进入项目时不自动改变目录
+          silent_chdir = false,
+        })
+        -- 集成到 Telescope
+        LazyVim.on_load("telescope.nvim", function()
+          require("telescope").load_extension("projects")
+        end)
+      end,
+    },
   },
   keys = {
     {
@@ -99,6 +140,80 @@ return {
         })
       end,
       desc = "Goto Symbol (Workspace)",
+    },
+
+    -- ===== 新增的项目感知搜索快捷键 =====
+    {
+      "<leader>sp",
+      function()
+        -- 获取当前文件所在的目录
+        local current_file = vim.fn.expand("%:p")
+        local current_dir = vim.fn.fnamemodify(current_file, ":h")
+
+        -- 如果当前没有文件，使用当前工作目录
+        if current_file == "" then
+          current_dir = vim.uv.cwd()
+        end
+
+        -- 配置选项
+        local opts = {
+          prompt_title = "Search in: " .. vim.fn.fnamemodify(current_dir, ":t"),
+          cwd = current_dir,
+          -- 使用更高效的搜索参数
+          vimgrep_arguments = {
+            "rg",
+            "--color=never",
+            "--no-heading",
+            "--with-filename",
+            "--line-number",
+            "--column",
+            "--smart-case",
+            "--hidden",
+            "--glob",
+            "!.git/*",
+            "--glob",
+            "!node_modules/*",
+            "--glob",
+            "!*.lock",
+          },
+          -- 添加路径显示
+          path_display = { "truncate" },
+        }
+
+        require("telescope.builtin").live_grep(opts)
+      end,
+      desc = "Search in Current File's Directory",
+    },
+
+    {
+      "<leader>sP",
+      function()
+        -- 显示当前项目信息
+        local project_ok, project = pcall(require, "project_nvim.project")
+        local root = nil
+        if project_ok then
+          root = project.get_project_root()
+        end
+
+        local current_dir = vim.uv.cwd()
+        local current_file = vim.fn.expand("%:p")
+
+        local info = string.format(
+          [[
+Project Root: %s
+Current Directory: %s
+Current File: %s
+Search Scope: %s
+]],
+          root or "Not in a project",
+          current_dir,
+          current_file,
+          root or current_dir
+        )
+
+        vim.notify(info, vim.log.levels.INFO, { title = "Project Info" })
+      end,
+      desc = "Show Project Info",
     },
   },
   opts = function()
