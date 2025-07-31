@@ -32,7 +32,7 @@ return {
       config = function()
         require("project_nvim").setup({
           -- 检测项目的方法
-          detection_methods = { "lsp", "pattern" },
+          detection_methods = {},
           -- 项目根目录的标识文件
           patterns = {
             ".git",
