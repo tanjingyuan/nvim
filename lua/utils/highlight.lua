@@ -32,6 +32,10 @@ augroup END
 
   -- 可选：设置普通行号颜色为稍微暗一些的颜色以形成对比
   vim.cmd("highlight LineNr guifg=#6b7280")
+
+  -- 可选：设置当前行颜色为白色或者浅灰色
+  -- vim.cmd("highlight CursorLine guibg=#45475a")
+  vim.cmd("highlight CursorLine guibg=#2e3440")
 end
 
 return M
