@@ -13,6 +13,9 @@ return {
         yaml = { "yamlfix" },
         python = { "black" },
       }
+      -- opts.formatters = { stylua = {
+      --   command = vim.fn.expand("~/.cargo/bin/stylua"),
+      -- } }
       return opts
     end,
   },

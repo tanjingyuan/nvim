@@ -4,6 +4,7 @@ return {
   dependencies = { "MunifTanjim/nui.nvim" },
   opts = {
     disable_mouse = false,
+    disabled_filetypes = { "log", "neo-tree", "mason", "prototxt", "lazy" },
   },
   config = function(_, opts)
     require("hardtime").setup(opts)
