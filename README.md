@@ -5,30 +5,31 @@ A modern Neovim configuration built on [LazyVim](https://www.lazyvim.org/) with 
 ## Features
 
 - 🚀 **Fast and Modern**: Built on LazyVim with lazy-loading for optimal performance
-- 🎨 **Beautiful UI**: Catppuccin theme with custom highlights
+- 🎨 **Beautiful UI**: Catppuccin & Everforest theme with custom highlights
 - 🤖 **AI-Powered**: GitHub Copilot integration for intelligent code completion
 - 📁 **Smart Project Management**: Project detection and navigation
 - 🔧 **Multi-Language Support**: Pre-configured for C/C++, Lua, Python, Shell, and more
 - 📋 **Intelligent Clipboard**: Works seamlessly across WSL, SSH, and native environments
 - 🔍 **Powerful Search**: Telescope and FZF integration for fuzzy finding
-- 📊 **Git Integration**: Gitsigns, Diffview, and Git commands built-in
+- 📊 **Git Integration**: LazyGit, Gitsigns, and Diffview built-in
 
 ## Requirements
 
-- Neovim >= 0.9.0
+- Neovim >= 0.10.0
 - Git
 - A [Nerd Font](https://www.nerdfonts.com/) (for icons)
 - Node.js (for some LSP servers)
 - Ripgrep (for searching)
 - fd (for file finding)
+- lazygit (for Git TUI)
 
 ### Language-Specific Requirements
 
 - **C/C++**: clangd, clang-format
 - **Lua**: stylua
-- **Python**: black
+- **Python**: black, pyright
 - **Shell**: shfmt
-- **CMake**: cmake-format
+- **CMake**: cmake-format, cmakelint
 - **YAML**: yamlfix
 
 ## Installation
@@ -79,12 +80,16 @@ A modern Neovim configuration built on [LazyVim](https://www.lazyvim.org/) with 
 
 | Key | Description |
 |-----|-------------|
+| `<leader>ff` | Find files |
+| `<leader>fg` | Find Git files |
 | `<leader>fW` | Live grep |
 | `<leader>fb` | Find buffers |
 | `<leader>fh` | Find help tags |
 | `<leader>fm` | Find marks |
 | `<leader>fo` | Find old files |
 | `<leader>fz` | Find in current buffer |
+| `<leader>sp` | Search in current file's directory |
+| `<leader>sP` | Show project info |
 | `<leader>cm` | Git commits |
 | `<leader>gt` | Git status |
 | `<leader>pt` | Pick hidden terminal |
@@ -95,6 +100,7 @@ A modern Neovim configuration built on [LazyVim](https://www.lazyvim.org/) with 
 |-----|-------------|
 | `<leader>ds` | LSP diagnostic loclist |
 | `<leader>cf` | Format file or range (in visual mode) |
+| `<leader>ch` | Show signature help |
 | `gp` | Preview definition |
 | `gl` | Preview declaration |
 | `q` | Close all preview windows |
@@ -103,6 +109,7 @@ A modern Neovim configuration built on [LazyVim](https://www.lazyvim.org/) with 
 
 | Key | Description |
 |-----|-------------|
+| `<leader>gg` | Open LazyGit |
 | `<leader>gdo` | Open Diffview |
 | `<leader>gdc` | Close Diffview |
 
@@ -118,7 +125,7 @@ A modern Neovim configuration built on [LazyVim](https://www.lazyvim.org/) with 
 | Key | Description |
 |-----|-------------|
 | `<Alt-h>` | Toggle horizontal terminal |
-| `<leader>cd` | Open terminal in current file's directory |
+| `<leader>cd` | Open floating terminal in current file's directory |
 
 ### Special Features
 
@@ -131,21 +138,25 @@ A modern Neovim configuration built on [LazyVim](https://www.lazyvim.org/) with 
 | `<leader>cg` | Generate call graph (C/C++) |
 | `<leader>uo` | Toggle whitespace visibility |
 | `<leader>al` | Clear Avante history |
+| `<leader>sr` | Search and replace (Grug-far) |
+| `<leader>b1-9` | Jump to buffer 1-9 (Bufferline) |
 
 ## Plugin Highlights
 
 ### UI & Themes
-- **Catppuccin**: Primary color scheme with custom highlights
-- **Bufferline**: Enhanced buffer tabs
-- **Lualine**: Informative status line
+- Catppuccin: Primary color scheme with custom highlights
+- **Everforest**: Primary color scheme with eye-friendly forest theme
+- **Bufferline**: Enhanced buffer tabs with number indicators
+- **Lualine**: Informative status line with LSP server display
 - **Snacks.nvim**: UI utilities with custom dashboard
 
 ### Editor Enhancement
-- **Telescope**: Primary fuzzy finder
+- **Telescope**: Primary fuzzy finder with project integration
 - **Neo-tree**: File explorer
 - **Hop**: Quick navigation
 - **Wildfire**: Smart text object selection
 - **UFO**: Advanced folding with fold previews
+- **Blink.cmp**: High-performance completion engine
 
 ### Development Tools
 - **LSP**: Full language server protocol support
@@ -153,12 +164,16 @@ A modern Neovim configuration built on [LazyVim](https://www.lazyvim.org/) with 
 - **Conform**: Unified formatting
 - **Copilot**: AI pair programming
 - **Gitsigns**: Git integration in buffers
+- **LazyGit**: Terminal UI for Git
 
 ### Utilities
 - **Mini.surround**: Surround operations
 - **Toggleterm**: Integrated terminal
 - **Grug-far**: Find and replace
 - **Hardtime**: Build better Vim habits
+- **Goto-preview**: Preview definitions in floating windows
+- **vim-visual-multi**: Multiple cursor support
+- **vim-oscyank**: Remote clipboard support
 
 ## Customization
 
@@ -212,7 +227,10 @@ Clipboard operations and formatting behavior adjust accordingly.
 │   └── utils/           # Utilities
 │       ├── clipboard.lua # Clipboard handling
 │       ├── highlight.lua # Custom highlights
-│       └── system.lua    # System detection
+│       ├── system.lua    # System detection
+│       ├── format.lua    # Format utilities
+│       ├── check.lua     # Module checking
+│       └── vendor.lua    # Third-party integrations
 ```
 
 ## Troubleshooting

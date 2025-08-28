@@ -23,7 +23,7 @@ function M.setup()
   if M.is_remote() then
     vim.g.autoformat = false
   else
-    vim.g.autoformat = true
+    vim.g.autoformat = false
   end
 end
 

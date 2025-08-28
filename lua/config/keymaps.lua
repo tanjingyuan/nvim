@@ -47,16 +47,16 @@ vim.keymap.set("n", "<leader>cd", function()
     pattern = "term://*toggleterm#*",
     callback = function()
       -- 设置 ESC 键在终端模式下切换到普通模式
-      vim.api.nvim_buf_set_keymap(0, 't', '<ESC>', [[<C-\><C-n>]], { noremap = true, silent = true })
+      vim.api.nvim_buf_set_keymap(0, "t", "<ESC>", [[<C-\><C-n>]], { noremap = true, silent = true })
       -- 设置 'q' 键在普通模式下关闭终端
-      vim.api.nvim_buf_set_keymap(0, 'n', 'q', [[<cmd>ToggleTerm<CR>]], { noremap = true, silent = true })
+      vim.api.nvim_buf_set_keymap(0, "n", "q", [[<cmd>ToggleTerm<CR>]], { noremap = true, silent = true })
       -- 设置 'i' 键在普通模式下进入插入模式
-      vim.api.nvim_buf_set_keymap(0, 'n', 'i', [[i]], { noremap = true, silent = true })
+      vim.api.nvim_buf_set_keymap(0, "n", "i", [[i]], { noremap = true, silent = true })
 
       -- 设置终端打开时自动进入插入模式
       vim.cmd("startinsert")
     end,
-    once = true
+    once = true,
   })
 end, { desc = "Open terminal in current buffer's directory" })
 
@@ -126,21 +126,23 @@ vim.api.nvim_set_keymap("n", "<leader>dm", "", {
   noremap = true,
   silent = true,
   callback = function()
-    local current_line = vim.fn.line('.')
+    local current_line = vim.fn.line(".")
     local marks = vim.fn.execute("marks")
     for line in marks:gmatch("[^\r\n]+") do
       local mark, lnum = line:match("^%s*(%S)%s+(%d+)")
       if mark and tonumber(lnum) == current_line then
         vim.cmd("delmarks " .. mark)
         vim.cmd("wshada!")
-        vim.notify("Mark '" .. mark .. "' deleted from line " .. current_line .. " and shada file updated!",
-          vim.log.levels.INFO)
+        vim.notify(
+          "Mark '" .. mark .. "' deleted from line " .. current_line .. " and shada file updated!",
+          vim.log.levels.INFO
+        )
         return
       end
     end
     vim.notify("No mark found on the current line.", vim.log.levels.WARN)
   end,
-  desc = "Delete current line's mark and update shada"
+  desc = "Delete current line's mark and update shada",
 })
 
 -- clangd
@@ -166,7 +168,7 @@ map("n", "<leader>uo", function()
   local list = vim.opt.list:get()
   if not list then
     vim.opt.list = true
-    vim.opt.listchars = { tab = '»·', trail = '•', space = '·', eol = '↲', nbsp = '␣' }
+    vim.opt.listchars = { tab = "»·", trail = "•", space = "·", eol = "↲", nbsp = "␣" }
     -- 设置空白字符的高亮颜色
     vim.cmd("highlight Whitespace guifg=#f38ba8")
     vim.cmd("highlight SpecialKey guifg=#f5c2e7 gui=bold")
@@ -176,3 +178,8 @@ map("n", "<leader>uo", function()
     vim.notify("显示空白字符已关闭", vim.log.levels.INFO)
   end
 end, { desc = "切换显示空白字符" })
+
+--切换自定义高亮
+map("n", "<leader>uH", function()
+  require("utils.highlight").toggle()
+end, { desc = "切换自定义高亮" })
