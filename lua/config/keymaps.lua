@@ -5,7 +5,54 @@ local autocmds = require("config.autocmds")
 local map = vim.keymap.set
 
 map("n", ";", ":", { noremap = true, silent = false })
-map("n", "<C-q>", ":<leader>bd<CR>", { noremap = true, silent = true })
+-- Buffer delete with support for fixed windows
+map("n", "<leader>bd", function()
+  -- 检查当前窗口是否是固定窗口
+  if vim.wo.winfixbuf then
+    -- 如果是固定窗口，先解除固定，然后删除buffer并关闭窗口
+    vim.wo.winfixbuf = false
+    local buf = vim.api.nvim_get_current_buf()
+    vim.cmd("close")
+    -- 尝试删除缓冲区（如果没有其他窗口使用它）
+    pcall(vim.api.nvim_buf_delete, buf, { force = false })
+  else
+    -- 使用 LazyVim 的默认 buffer 删除功能
+    local ok, snacks = pcall(require, "snacks")
+    if ok and snacks.bufdelete then
+      snacks.bufdelete()
+    else
+      -- 如果 snacks 不可用，使用基本的 bdelete
+      vim.cmd("bdelete")
+    end
+  end
+end, { desc = "Delete Buffer (supports fixed windows)" })
+
+-- Buffer delete others with support for fixed windows
+map("n", "<leader>bo", function()
+  local current_buf = vim.api.nvim_get_current_buf()
+  local buffers = vim.api.nvim_list_bufs()
+
+  for _, buf in ipairs(buffers) do
+    if buf ~= current_buf and vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].buflisted then
+      -- 查找使用此缓冲区的窗口
+      local wins = vim.fn.win_findbuf(buf)
+      for _, win in ipairs(wins) do
+        if vim.api.nvim_win_is_valid(win) then
+          -- 如果窗口是固定窗口，先解除固定再关闭
+          if vim.api.nvim_win_get_option(win, "winfixbuf") then
+            vim.api.nvim_win_set_option(win, "winfixbuf", false)
+            vim.api.nvim_win_close(win, false)
+          end
+        end
+      end
+      -- 删除缓冲区
+      pcall(vim.api.nvim_buf_delete, buf, { force = false })
+    end
+  end
+  vim.notify("Deleted all other buffers", vim.log.levels.INFO)
+end, { desc = "Delete Other Buffers (supports fixed windows)" })
+
+map("n", "<C-q>", "<leader>bd", { remap = true, silent = true })
 
 map("i", "<C-b>", "<ESC>^i", { desc = "move beginning of line" })
 map("i", "<C-e>", "<End>", { desc = "move end of line" })

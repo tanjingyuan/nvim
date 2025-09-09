@@ -279,6 +279,7 @@ Search Scope: %s
           },
           n = {
             ["q"] = actions.close,
+            ["t"] = actions.select_tab,
           },
         },
       },

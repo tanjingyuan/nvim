@@ -70,6 +70,71 @@ return {
         ["t"] = "open",
         ["h"] = "close_node",
         ["<space>"] = "none",
+        ["s"] = {
+          function(state)
+            local node = state.tree:get_node()
+            if node.type == "file" then
+              -- 移动到最右侧窗口
+              vim.cmd("wincmd l")
+              while vim.fn.winnr() ~= vim.fn.winnr("l") do
+                vim.cmd("wincmd l")
+              end
+              -- 在最右侧打开垂直分割窗口
+              vim.cmd("vsplit " .. node.path)
+              -- 移动到新窗口（现在是最右侧）
+              vim.cmd("wincmd l")
+              -- 设置窗口为固定缓冲区（Neovim 0.10+）
+              if vim.fn.has("nvim-0.10") == 1 then
+                vim.wo.winfixbuf = true
+              else
+                -- 对于旧版本，使用自动命令防止缓冲区切换
+                local win_id = vim.api.nvim_get_current_win()
+                local buf_id = vim.api.nvim_get_current_buf()
+                vim.api.nvim_create_autocmd("BufLeave", {
+                  callback = function()
+                    if vim.api.nvim_win_is_valid(win_id) then
+                      vim.api.nvim_win_set_buf(win_id, buf_id)
+                    end
+                  end,
+                  buffer = buf_id,
+                })
+              end
+            end
+          end,
+          desc = "Open in fixed vertical split on the right",
+        },
+        ["S"] = {
+          function(state)
+            local node = state.tree:get_node()
+            if node.type == "file" then
+              -- 移动到最底部窗口
+              vim.cmd("wincmd j")
+              while vim.fn.winnr() ~= vim.fn.winnr("j") do
+                vim.cmd("wincmd j")
+              end
+              -- 在最底部打开水平分割窗口
+              vim.cmd("split " .. node.path)
+              -- 移动到新窗口（现在是最底部）
+              vim.cmd("wincmd j")
+              -- 设置窗口为固定缓冲区
+              if vim.fn.has("nvim-0.10") == 1 then
+                vim.wo.winfixbuf = true
+              else
+                local win_id = vim.api.nvim_get_current_win()
+                local buf_id = vim.api.nvim_get_current_buf()
+                vim.api.nvim_create_autocmd("BufLeave", {
+                  callback = function()
+                    if vim.api.nvim_win_is_valid(win_id) then
+                      vim.api.nvim_win_set_buf(win_id, buf_id)
+                    end
+                  end,
+                  buffer = buf_id,
+                })
+              end
+            end
+          end,
+          desc = "Open in fixed horizontal split at bottom",
+        },
         ["Y"] = {
           function(state)
             local node = state.tree:get_node()
