@@ -76,13 +76,15 @@ A modern Neovim configuration built on [LazyVim](https://www.lazyvim.org/) with 
 | `<C-j>` | Move down |
 | `<C-k>` | Move up |
 
-### Telescope
+### Telescope & FZF
 
 | Key | Description |
 |-----|-------------|
-| `<leader>ff` | Find files |
+| `<leader>ff` | Find files (FZF) |
 | `<leader>fg` | Find Git files |
-| `<leader>fW` | Live grep |
+| `<leader>fw` | Live grep in Neo-tree path (regex mode) |
+| `<leader>fW` | Fixed string search in Neo-tree path (literal, for special chars) |
+| `<leader>fa` | Exact search with FZF (case-sensitive, fixed strings) |
 | `<leader>fb` | Find buffers |
 | `<leader>fh` | Find help tags |
 | `<leader>fm` | Find marks |
