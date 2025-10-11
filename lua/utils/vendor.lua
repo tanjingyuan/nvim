@@ -10,6 +10,9 @@ local function neo_tree_live_grep()
   require("telescope.builtin").live_grep({
     cwd = path,
     prompt_title = "Live Grep in current Neo-tree Path",
+    additional_args = function()
+      return { "--fixed-strings" }
+    end,
   })
 end
 
@@ -79,7 +82,7 @@ local function neo_tree_exact_live_grep()
       ["--exact"] = "",
       ["--no-sort"] = "",
     },
-    rg_opts = "--column --line-number --no-heading --color=always --case-sensitive --max-columns=4096 --word-regexp",
+    rg_opts = "--column --line-number --no-heading --color=always --case-sensitive --max-columns=4096 --fixed-strings",
     prompt_title = "精确搜索 (区分大小写+完整单词)",
   })
 end
