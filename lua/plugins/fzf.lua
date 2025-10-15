@@ -50,17 +50,21 @@ return {
           end
         else
           local origin_get = ctx_mod.get
-          ctx_mod.get = function(bufnr, winid)
+          ctx_mod.get = function(winid, ...)
+            local target_winid = winid
+            if select("#", ...) >= 1 then
+              target_winid = select(1, ...)
+            end
             -- 更严格的窗口有效性检查
-            if winid and not vim.api.nvim_win_is_valid(winid) then
+            if target_winid and not vim.api.nvim_win_is_valid(target_winid) then
               return nil
             end
             -- 用 pcall 包裹原始调用，捕获任何运行时错误
-            local ok, result = pcall(origin_get, bufnr, winid)
+            local ok, ranges, lines = pcall(origin_get, target_winid)
             if not ok then
               return nil
             end
-            return result
+            return ranges, lines
           end
         end
       end
