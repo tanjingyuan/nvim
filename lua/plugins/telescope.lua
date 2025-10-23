@@ -1,3 +1,33 @@
+-- 检测可用的构建命令
+local build_cmd = vim.fn.executable("make") == 1 and "make" or vim.fn.executable("cmake") == 1 and "cmake" or nil
+
+local function notify_pick_dir(command, opts, title)
+  local picker = LazyVim.pick(command, opts)
+  local notify_title = title or "Telescope 搜索"
+
+  return function(...)
+    local info = opts and vim.deepcopy(opts) or {}
+    local cwd = info.cwd
+
+    if type(cwd) == "boolean" then
+      cwd = nil
+    end
+
+    if not cwd and info.root ~= false then
+      cwd = LazyVim.root({ buf = info.buf })
+    end
+
+    if not cwd then
+      cwd = vim.uv.cwd()
+    end
+
+    local display = vim.fn.fnamemodify(cwd, ":~")
+    vim.notify(string.format("搜索目录: %s", display), vim.log.levels.INFO, { title = notify_title })
+
+    return picker(...)
+  end
+end
+
 return {
   "nvim-telescope/telescope.nvim",
   event = "VeryLazy",
@@ -272,8 +302,8 @@ Search Scope: %s
             ["<a-h>"] = find_files_with_hidden,
             ["<C-Down>"] = actions.cycle_history_next,
             ["<C-Up>"] = actions.cycle_history_prev,
-            ["<C-d>"] = actions.preview_scrolling_down,
-            ["<C-u>"] = actions.preview_scrolling_up,
+            -- ["<C-d>"] = actions.preview_scrolling_down,
+            -- ["<C-u>"] = actions.preview_scrolling_up,
             ["<C-j>"] = actions.cycle_history_next,
             ["<C-k>"] = actions.cycle_history_prev,
           },

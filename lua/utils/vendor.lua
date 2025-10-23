@@ -7,6 +7,8 @@ end
 
 local function neo_tree_live_grep()
   local path = get_neo_tree_path()
+  local display = vim.fn.fnamemodify(path or vim.uv.cwd(), ":~")
+  vim.notify(string.format("搜索目录: %s", display), vim.log.levels.INFO, { title = "Telescope 搜索" })
   require("telescope.builtin").live_grep({
     cwd = path,
     prompt_title = "Live Grep in current Neo-tree Path",
@@ -76,6 +78,8 @@ end
 
 local function neo_tree_exact_live_grep()
   local path = get_neo_tree_path()
+  local display = vim.fn.fnamemodify(path or vim.uv.cwd(), ":~")
+  vim.notify(string.format("搜索目录: %s", display), vim.log.levels.INFO, { title = "FZF 搜索" })
   require("fzf-lua").live_grep({
     cwd = path,
     fzf_opts = {
@@ -336,22 +340,6 @@ function M.setup()
     { noremap = true, silent = true, desc = "Find directories from home with Tab completion" }
   )
 
-  vim.api.nvim_create_autocmd("BufUnload", {
-    pattern = "*.bin", -- 检查所有文件
-    callback = function(ev)
-      -- 检查文件类型是否为二进制
-      local is_binary = vim.bo[ev.buf].binary
-
-      if is_binary and vim.b[ev.buf].bigfile then
-        vim.cmd("DoMatchParen")
-        vim.notify(
-          "Reactivated matchparen and syntax for binary file: " .. vim.fn.bufname(ev.buf),
-          vim.log.levels.INFO,
-          { title = "Binary File Closed" }
-        )
-      end
-    end,
-  })
 end
 
 return M

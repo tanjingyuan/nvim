@@ -1,6 +1,14 @@
 return {
   "neovim/nvim-lspconfig",
   opts = function(_, opts)
+    opts.capabilities = vim.tbl_deep_extend("force", opts.capabilities or {}, {
+      textDocument = {
+        foldingRange = {
+          dynamicRegistration = false,
+          lineFoldingOnly = true,
+        },
+      },
+    })
     opts.inlay_hints = { enabled = false }
     local keys = require("lazyvim.plugins.lsp.keymaps").get()
     keys[#keys + 1] = { "<C-k>", false, mode = "i" }

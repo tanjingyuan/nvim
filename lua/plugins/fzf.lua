@@ -6,7 +6,7 @@ return {
     return vim.tbl_deep_extend("force", opts, {
       keymap = {
         fzf = {
-          ["ctrl-n"] = "donw",
+          ["ctrl-n"] = "down",
           ["ctrl-p"] = "up",
           -- ["alt-n"] = "next-history",
           -- ["alt-p"] = "previous-history",
@@ -32,13 +32,36 @@ return {
       vim.treesitter.close_leaked_contexts = stub
     end
 
+    local function pack_results(...)
+      return { n = select('#', ...), ... }
+    end
+
+    local function unpack_results(results)
+      return unpack(results, 1, results.n or #results)
+    end
+
     local function set_ctx_stubs()
       local ok_render, render = pcall(require, "treesitter-context.render")
       if ok_render and render then
         if type(render.close_leaked_contexts) ~= "function" then
           render.close_leaked_contexts = stub
         end
-        if type(render.open) ~= "function" then
+        if type(render.open) == "function" then
+          local origin_open = render.open
+          render.open = function(winid, ...)
+            if type(winid) ~= "number" or not vim.api.nvim_win_is_valid(winid) then
+              return
+            end
+            local args = { ... }
+            local nargs = select('#', ...)
+            local ok, results = pcall(function()
+              return pack_results(origin_open(winid, unpack(args, 1, nargs)))
+            end)
+            if ok and results then
+              return unpack_results(results)
+            end
+          end
+        else
           render.open = function() end
         end
       end

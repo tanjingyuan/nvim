@@ -1,7 +1,6 @@
 -- for everforest
 return {
   "akinsho/bufferline.nvim",
-  after = "everforest",
   config = function()
     require("bufferline").setup({
       options = {

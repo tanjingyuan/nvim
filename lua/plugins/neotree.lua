@@ -67,6 +67,7 @@ return {
       mappings = {
         ["o"] = false,
         ["t"] = false,
+        ["c"] = false,
         ["t"] = "open",
         ["h"] = "close_node",
         ["<space>"] = "none",
@@ -135,13 +136,23 @@ return {
           end,
           desc = "Open in fixed horizontal split at bottom",
         },
-        ["Y"] = {
+        ["cn"] = {
+          function(state)
+            local node = state.tree:get_node()
+            local filename = vim.fn.fnamemodify(node:get_id(), ":t")
+            vim.fn.setreg("+", filename, "c")
+            vim.notify("已复制文件名: " .. filename, vim.log.levels.INFO)
+          end,
+          desc = "Copy filename to clipboard",
+        },
+        ["cp"] = {
           function(state)
             local node = state.tree:get_node()
             local path = node:get_id()
             vim.fn.setreg("+", path, "c")
+            vim.notify("已复制完整路径: " .. path, vim.log.levels.INFO)
           end,
-          desc = "Copy Path to Clipboard",
+          desc = "Copy path to clipboard",
         },
         ["O"] = {
           function(state)
@@ -150,6 +161,43 @@ return {
           desc = "Open with System Application",
         },
         ["P"] = { "toggle_preview", config = { use_float = false } },
+        ["u"] = {
+          function(state)
+            -- 获取当前根目录的上一层目录
+            local current_root = state.path or vim.fn.getcwd()
+            local parent = vim.fn.fnamemodify(current_root, ":h")
+
+            -- 如果上层目录存在且不是当前目录，则切换到上层目录
+            if parent and parent ~= current_root then
+              require("neo-tree.command").execute({
+                dir = parent,
+                reveal = true,
+                reveal_file = current_root  -- 定位到原来的目录
+              })
+            else
+              vim.notify("已到达根目录", vim.log.levels.INFO)
+            end
+          end,
+          desc = "Navigate to parent directory",
+        },
+        ["-"] = {
+          function(state)
+            -- 另一种实现方式：使用 - 键也可以切换到上层目录
+            local current_root = state.path or vim.fn.getcwd()
+            local parent = vim.fn.fnamemodify(current_root, ":h")
+
+            if parent and parent ~= current_root then
+              require("neo-tree.command").execute({
+                dir = parent,
+                reveal = true,
+                reveal_file = current_root
+              })
+            else
+              vim.notify("已到达根目录", vim.log.levels.INFO)
+            end
+          end,
+          desc = "Go up to parent directory",
+        },
       },
     },
     default_component_configs = {

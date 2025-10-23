@@ -5,8 +5,11 @@ local autocmds = require("config.autocmds")
 local map = vim.keymap.set
 
 map("n", ";", ":", { noremap = true, silent = false })
--- Buffer delete with support for fixed windows
+-- Buffer delete with smart split handling
 map("n", "<leader>bd", function()
+  -- 获取当前窗口数量
+  local win_count = #vim.api.nvim_list_wins()
+
   -- 检查当前窗口是否是固定窗口
   if vim.wo.winfixbuf then
     -- 如果是固定窗口，先解除固定，然后删除buffer并关闭窗口
@@ -15,8 +18,21 @@ map("n", "<leader>bd", function()
     vim.cmd("close")
     -- 尝试删除缓冲区（如果没有其他窗口使用它）
     pcall(vim.api.nvim_buf_delete, buf, { force = false })
+  elseif win_count > 1 then
+    -- 如果有分屏（多个窗口），关闭当前窗口而不是只删除 buffer
+    local buf = vim.api.nvim_get_current_buf()
+
+    -- 先关闭窗口（取消分屏）
+    vim.cmd("close")
+
+    -- 检查这个 buffer 是否还在其他窗口中打开
+    local buf_wins = vim.fn.win_findbuf(buf)
+    if #buf_wins == 0 then
+      -- 如果没有其他窗口使用这个 buffer，删除它
+      pcall(vim.api.nvim_buf_delete, buf, { force = false })
+    end
   else
-    -- 使用 LazyVim 的默认 buffer 删除功能
+    -- 只有一个窗口时，使用默认的 buffer 删除功能
     local ok, snacks = pcall(require, "snacks")
     if ok and snacks.bufdelete then
       snacks.bufdelete()
@@ -25,7 +41,7 @@ map("n", "<leader>bd", function()
       vim.cmd("bdelete")
     end
   end
-end, { desc = "Delete Buffer (supports fixed windows)" })
+end, { desc = "Delete Buffer (smart split handling)" })
 
 -- Buffer delete others with support for fixed windows
 map("n", "<leader>bo", function()
@@ -106,6 +122,28 @@ vim.keymap.set("n", "<leader>cd", function()
     once = true,
   })
 end, { desc = "Open terminal in current buffer's directory" })
+
+-- Open shell config based on current shell
+map("n", "<leader>fs", function()
+  local shell = vim.env.SHELL or vim.o.shell
+  local config_file
+
+  if shell:match("zsh") then
+    config_file = vim.fn.expand("~/.zshrc")
+  elseif shell:match("bash") then
+    config_file = vim.fn.expand("~/.bashrc")
+  else
+    vim.notify("未知的 shell 类型: " .. shell, vim.log.levels.WARN)
+    return
+  end
+
+  -- 检查文件是否存在
+  if vim.fn.filereadable(config_file) == 1 then
+    vim.cmd("edit " .. config_file)
+  else
+    vim.notify("配置文件不存在: " .. config_file, vim.log.levels.ERROR)
+  end
+end, { desc = "Open shell config" })
 
 -- telescope
 map("n", "<leader>fW", "<cmd>Telescope live_grep<CR>", { desc = "telescope live grep" })
@@ -193,7 +231,7 @@ vim.api.nvim_set_keymap("n", "<leader>dm", "", {
 })
 
 -- clangd
-map("n", "<leader>gh", "<cmd>ClangdSwitchSourceHeader<CR>", { desc = "Jump to Header" })
+map("n", "<leader>gh", "<cmd>ClangdSwitchSourceHeader<CR>", { desc = "Switch Source/Header" })
 
 -- preivew
 map("n", "gp", "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", { desc = "Goto Definition" })
@@ -205,6 +243,11 @@ map("n", "<leader>cg", "<cmd>CallGraphR<CR>", { desc = "Generate Call Graph" })
 
 --avante
 map("n", "<leader>al", "<cmd>AvanteClear history<CR>", { desc = "Clear Avgante history" })
+
+-- copilot (cmd = "Copilot" 会在执行命令时自动加载插件)
+map("n", "<leader>ct", "<cmd>Copilot toggle<CR>", { desc = "Toggle Copilot" })
+map("n", "<leader>cs", "<cmd>Copilot status<CR>", { desc = "Copilot Status" })
+map("n", "<leader>cp", "<cmd>Copilot panel<CR>", { desc = "Copilot Panel" })
 
 --project
 map("n", "<leader>pp", "<cmd>ProjectRoot<CR>", { desc = "Project Root" })

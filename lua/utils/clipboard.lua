@@ -5,7 +5,20 @@ local M = {}
 function M.setup()
   vim.o.clipboard = "unnamedplus"
 
-  if system.is_wsl() then
+  if system.is_docker() then
+    -- Docker 环境下使用 OSC 52 协议
+    vim.g.clipboard = {
+      name = "OSC 52",
+      copy = {
+        ["+"] = require("vim.ui.clipboard.osc52").copy("+"),
+        ["*"] = require("vim.ui.clipboard.osc52").copy("*"),
+      },
+      paste = {
+        ["+"] = require("vim.ui.clipboard.osc52").paste("+"),
+        ["*"] = require("vim.ui.clipboard.osc52").paste("*"),
+      },
+    }
+  elseif system.is_wsl() then
     vim.g.clipboard = {
       name = "WslClipboard",
       copy = {
