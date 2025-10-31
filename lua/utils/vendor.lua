@@ -96,12 +96,16 @@ local function neo_tree_find_files()
   require("fzf-lua").files({
     cwd = path,
     prompt_title = "Find Files in current Neo-tree Path",
+    -- 显示隐藏文件和被 gitignore 忽略的文件
+    fd_opts = "--type f --hidden --no-ignore --exclude .git",
   })
 end
 
 local function neo_tree_find_workspace_files()
   require("fzf-lua").files({
     prompt_title = "Find Files in workspace Neo-tree Path",
+    -- 显示隐藏文件和被 gitignore 忽略的文件
+    fd_opts = "--type f --hidden --no-ignore --exclude .git",
   })
 end
 

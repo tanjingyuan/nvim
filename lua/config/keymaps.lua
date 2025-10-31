@@ -7,37 +7,34 @@ local map = vim.keymap.set
 map("n", ";", ":", { noremap = true, silent = false })
 -- Buffer delete with smart split handling
 map("n", "<leader>bd", function()
-  -- 获取当前窗口数量
-  local win_count = #vim.api.nvim_list_wins()
+  local current_buf = vim.api.nvim_get_current_buf()
+  -- 仅统计可见的正常窗口（排除浮窗）以避免误判最后一个窗口
+  local normal_win_count = #vim.tbl_filter(function(win)
+    return vim.api.nvim_win_get_config(win).relative == ""
+  end, vim.api.nvim_tabpage_list_wins(0))
 
-  -- 检查当前窗口是否是固定窗口
   if vim.wo.winfixbuf then
-    -- 如果是固定窗口，先解除固定，然后删除buffer并关闭窗口
     vim.wo.winfixbuf = false
-    local buf = vim.api.nvim_get_current_buf()
-    vim.cmd("close")
-    -- 尝试删除缓冲区（如果没有其他窗口使用它）
-    pcall(vim.api.nvim_buf_delete, buf, { force = false })
-  elseif win_count > 1 then
-    -- 如果有分屏（多个窗口），关闭当前窗口而不是只删除 buffer
-    local buf = vim.api.nvim_get_current_buf()
+  end
 
-    -- 先关闭窗口（取消分屏）
-    vim.cmd("close")
-
-    -- 检查这个 buffer 是否还在其他窗口中打开
-    local buf_wins = vim.fn.win_findbuf(buf)
-    if #buf_wins == 0 then
-      -- 如果没有其他窗口使用这个 buffer，删除它
-      pcall(vim.api.nvim_buf_delete, buf, { force = false })
+  if normal_win_count > 1 then
+    local closed = pcall(vim.cmd, "close")
+    -- 关闭窗口后，如果 buffer 已不在其他窗口中，则删除 buffer
+    if closed then
+      local buf_wins = vim.fn.win_findbuf(current_buf)
+      if #buf_wins == 0 then
+        pcall(vim.api.nvim_buf_delete, current_buf, { force = false })
+      end
+    else
+      -- 关闭失败（例如仍被视为最后窗口）则直接删 buffer
+      pcall(vim.api.nvim_buf_delete, current_buf, { force = false })
     end
   else
-    -- 只有一个窗口时，使用默认的 buffer 删除功能
+    -- 只有一个正常窗口时，使用默认的 buffer 删除功能
     local ok, snacks = pcall(require, "snacks")
     if ok and snacks.bufdelete then
       snacks.bufdelete()
     else
-      -- 如果 snacks 不可用，使用基本的 bdelete
       vim.cmd("bdelete")
     end
   end
@@ -156,6 +153,38 @@ map("n", "<leader>cm", "<cmd>Telescope git_commits<CR>", { desc = "telescope git
 map("n", "<leader>gt", "<cmd>Telescope git_status<CR>", { desc = "telescope git status" })
 map("n", "<leader>pt", "<cmd>Telescope terms<CR>", { desc = "telescope pick hidden term" })
 
+-- Snacks: 在项目中查找所有文件（包含隐藏和被.gitignore忽略）
+map("n", "<leader><space>", function()
+  -- 获取 Neotree 的当前路径
+  local neo_tree_path = nil
+  local ok_neo, neo_manager = pcall(require, "neo-tree.sources.manager")
+  if ok_neo then
+    local state = neo_manager.get_state("filesystem")
+    if state and state.path then
+      neo_tree_path = state.path
+    end
+  end
+
+  local ok, Snacks = pcall(require, "snacks")
+  if not ok then
+    vim.notify("Snacks 未加载，使用 Telescope 代替", vim.log.levels.WARN)
+    require("telescope.builtin").find_files({
+      cwd = neo_tree_path,
+      hidden = true,
+      no_ignore = true,
+    })
+    return
+  end
+
+  -- 使用 Neotree 的路径作为搜索目录
+  Snacks.picker.files({
+    cwd = neo_tree_path,
+    hidden = true,
+    ignored = true,
+    follow = true,
+  })
+end, { desc = "Find files (all, include .gitignore)" })
+
 -- map("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "telescope find files" })
 -- map(
 --   "n",
@@ -251,7 +280,11 @@ map("n", "<leader>cp", "<cmd>Copilot panel<CR>", { desc = "Copilot Panel" })
 
 --project
 map("n", "<leader>pp", "<cmd>ProjectRoot<CR>", { desc = "Project Root" })
-map("n", "<leader>pa", autocmds.add_project, { desc = "Add Project" })
+map("n", "<leader>pa", function()
+  -- 添加项目，但不使用 git root
+  autocmds.add_project(false, false)
+end, { desc = "Add Current Directory as Project" })
+map("n", "<leader>pd", autocmds.add_project_debug, { desc = "Add Project (Debug)" })
 
 --显示空白字符
 map("n", "<leader>uo", function()
