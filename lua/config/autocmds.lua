@@ -2,20 +2,31 @@
 -- Default autocmds that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/autocmds.lua
 -- Add any additional autocmds here
 
--- Make telescope preview show line numbers
-vim.api.nvim_create_autocmd("User", {
-  pattern = "TelescopePreviewerLoaded",
-  callback = function()
-    vim.opt_local.number = true
-  end,
-})
-
 -- Dissable new line comment
 vim.api.nvim_create_autocmd("BufEnter", {
   callback = function()
     vim.opt.formatoptions:remove({ "c", "r", "o" })
   end,
   desc = "Disable New Line Comment",
+})
+
+-- CSV/TSV viewing helpers
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "csv", "tsv" },
+  callback = function(event)
+    vim.opt_local.wrap = false
+
+    local function cmd(command)
+      return function()
+        vim.cmd(command)
+      end
+    end
+
+    vim.keymap.set("n", "<leader>cv", cmd("RainbowDelim"), { buffer = event.buf, desc = "CSV: 选择分隔符/高亮" })
+    vim.keymap.set("n", "<leader>cA", cmd("RainbowAlign"), { buffer = event.buf, desc = "CSV: 对齐列" })
+    vim.keymap.set("n", "<leader>cS", cmd("RainbowShrink"), { buffer = event.buf, desc = "CSV: 去掉字段首尾空格" })
+  end,
+  desc = "CSV/TSV viewing helpers",
 })
 
 local M = {}

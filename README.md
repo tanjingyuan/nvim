@@ -10,7 +10,7 @@ A modern Neovim configuration built on [LazyVim](https://www.lazyvim.org/) with 
 - 📁 **Smart Project Management**: Project detection and navigation
 - 🔧 **Multi-Language Support**: Pre-configured for C/C++, Lua, Python, Shell, and more
 - 📋 **Intelligent Clipboard**: Works seamlessly across WSL, SSH, and native environments
-- 🔍 **Powerful Search**: Telescope and FZF integration for fuzzy finding
+- 🔍 **Powerful Search**: Snacks and FZF integration for fuzzy finding
 - 📊 **Git Integration**: LazyGit, Gitsigns, and Diffview built-in
 
 ## Requirements
@@ -76,20 +76,20 @@ A modern Neovim configuration built on [LazyVim](https://www.lazyvim.org/) with 
 | `<C-j>` | Move down |
 | `<C-k>` | Move up |
 
-### Telescope & FZF
+### Search
 
 | Key | Description |
 |-----|-------------|
 | `<leader>ff` | Find files (FZF) |
 | `<leader>fg` | Find Git files |
-| `<leader>fw` | Live grep in Neo-tree path (regex mode) |
+| `<leader>fw` | Fuzzy grep in Neo-tree path (Snacks literal search) |
 | `<leader>fW` | Fixed string search in Neo-tree path (literal, for special chars) |
-| `<leader>fa` | Exact search with FZF (case-sensitive, fixed strings) |
+| `<leader>fa` | Exact search in Neo-tree path (Snacks, case-sensitive whole word) |
 | `<leader>fb` | Find buffers |
 | `<leader>fh` | Find help tags |
 | `<leader>fm` | Find marks |
 | `<leader>fo` | Find old files |
-| `<leader>fz` | Find in current buffer |
+| `<leader>fz` | Exact search in current buffer (Snacks) |
 | `<leader>sp` | Search in current file's directory |
 | `<leader>sP` | Show project info |
 | `<leader>cm` | Git commits |
@@ -103,15 +103,17 @@ A modern Neovim configuration built on [LazyVim](https://www.lazyvim.org/) with 
 | `<leader>ds` | LSP diagnostic loclist |
 | `<leader>cf` | Format file or range (in visual mode) |
 | `<leader>ch` | Show signature help |
-| `gp` | Preview definition |
-| `gl` | Preview declaration |
-| `q` | Close all preview windows |
+| `<C-s>` | Save file |
 
 ### Git
 
 | Key | Description |
 |-----|-------------|
-| `<leader>gg` | Open LazyGit |
+| `<leader>gg` | Open LazyGit for current file repo |
+| `<leader>gG` | Open LazyGit for current cwd |
+| `<leader>gf` | Show current file history in LazyGit |
+| `<leader>gF` | Show repository history in LazyGit |
+| `<leader>gC` | Open LazyGit config |
 | `<leader>gdo` | Open Diffview |
 | `<leader>gdc` | Close Diffview |
 
@@ -153,7 +155,8 @@ A modern Neovim configuration built on [LazyVim](https://www.lazyvim.org/) with 
 - **Snacks.nvim**: UI utilities with custom dashboard
 
 ### Editor Enhancement
-- **Telescope**: Primary fuzzy finder with project integration
+- **Snacks.nvim**: Primary picker and search UI
+- **fzf-lua**: Secondary picker for directory and file workflows
 - **Neo-tree**: File explorer
 - **Hop**: Quick navigation
 - **Wildfire**: Smart text object selection
@@ -173,7 +176,6 @@ A modern Neovim configuration built on [LazyVim](https://www.lazyvim.org/) with 
 - **Toggleterm**: Integrated terminal
 - **Grug-far**: Find and replace
 - **Hardtime**: Build better Vim habits
-- **Goto-preview**: Preview definitions in floating windows
 - **vim-visual-multi**: Multiple cursor support
 - **vim-oscyank**: Remote clipboard support
 

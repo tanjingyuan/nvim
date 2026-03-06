@@ -8,86 +8,34 @@ end
 local function neo_tree_live_grep()
   local path = get_neo_tree_path()
   local display = vim.fn.fnamemodify(path or vim.uv.cwd(), ":~")
-  vim.notify(string.format("搜索目录: %s", display), vim.log.levels.INFO, { title = "Telescope 搜索" })
-  require("telescope.builtin").live_grep({
+  vim.notify(string.format("搜索目录: %s", display), vim.log.levels.INFO, { title = "Snacks 搜索" })
+  Snacks.picker.grep({
     cwd = path,
-    prompt_title = "Live Grep in current Neo-tree Path",
-    additional_args = function()
-      return { "--fixed-strings" }
-    end,
+    regex = false,
+    title = "模糊搜索",
   })
 end
 
--- For telescope
---[[
-local function neo_tree_find_files()
+local function neo_tree_fixed_live_grep()
   local path = get_neo_tree_path()
-  require("telescope.builtin").find_files({
+  local display = vim.fn.fnamemodify(path or vim.uv.cwd(), ":~")
+  vim.notify(string.format("搜索目录: %s", display), vim.log.levels.INFO, { title = "Snacks 搜索" })
+  Snacks.picker.grep({
     cwd = path,
-    prompt_title = "Find Files in current Neo-tree Path",
+    regex = false,
+    title = "固定字符串搜索",
   })
 end
-
-local function neo_tree_find_workspace_files()
-  local path = get_neo_tree_path()
-  require("telescope.builtin").find_files({
-    prompt_title = "Find Files in workspace Neo-tree Path",
-  })
-end
-
-local function neo_tree_find_directory()
-  local path = get_neo_tree_path()
-  require("telescope.builtin").find_files({
-    cwd = path,
-    find_command = { "find", ".", "-type", "d", "-not", "-path", "*/.*" },
-    prompt_title = "Find current Directories",
-  })
-end
-
-local function neo_tree_find_workspace_directory()
-  local path = get_neo_tree_path()
-  require("telescope.builtin").find_files({
-    cwd = path,
-    find_command = { "find", ".", "-type", "d", "-not", "-path", "*/.*" },
-    prompt_title = "Find workspace Directories",
-  })
-end
-]]
-
--- fzf
--- local function neo_tree_live_grep()
---   local path = get_neo_tree_path()
---   require("fzf-lua").live_grep({
---     cwd = path,
---     prompt_title = "Live Grep in current Neo-tree Path",
---   })
--- end
-
--- local function neo_tree_exact_live_grep()
---   local path = get_neo_tree_path()
---   require("fzf-lua").live_grep({
---     cwd = path,
---     fzf_opts = {
---       ["--exact"] = "",
---       ["--no-sort"] = "",
---     },
---     rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=4096 --word-regexp",
---     prompt_title = "精确搜索 (不区分大小写+完整单词)",
---   })
--- end
 
 local function neo_tree_exact_live_grep()
   local path = get_neo_tree_path()
   local display = vim.fn.fnamemodify(path or vim.uv.cwd(), ":~")
-  vim.notify(string.format("搜索目录: %s", display), vim.log.levels.INFO, { title = "FZF 搜索" })
-  require("fzf-lua").live_grep({
+  vim.notify(string.format("搜索目录: %s", display), vim.log.levels.INFO, { title = "Snacks 搜索" })
+  Snacks.picker.grep({
     cwd = path,
-    fzf_opts = {
-      ["--exact"] = "",
-      ["--no-sort"] = "",
-    },
-    rg_opts = "--column --line-number --no-heading --color=always --case-sensitive --max-columns=4096 --fixed-strings",
-    prompt_title = "精确搜索 (区分大小写+完整单词)",
+    regex = false,
+    args = { "--case-sensitive", "--word-regexp" },
+    title = "精确搜索 (区分大小写+完整单词)",
   })
 end
 
@@ -310,6 +258,12 @@ end
 
 function M.setup()
   vim.keymap.set("n", "<leader>fw", neo_tree_live_grep, { noremap = true, silent = true, desc = "Neo-tree Live Grep" })
+  vim.keymap.set(
+    "n",
+    "<leader>fW",
+    neo_tree_fixed_live_grep,
+    { noremap = true, silent = true, desc = "Neo-tree Fixed String Grep" }
+  )
   vim.keymap.set(
     "n",
     "<leader>fa",

@@ -4,6 +4,9 @@ return {
     local projects_utils = require("utils.projects")
     local picker_util = require("snacks.picker.util")
 
+    -- 启用图片预览（需终端支持 Kitty Graphics Protocol，如 kitty/ghostty/wezterm）
+    opts.image = opts.image or {}
+
     local function manual_projects_finder(_, _)
       local projects = projects_utils.load_projects()
       return function(cb)
@@ -132,11 +135,244 @@ return {
   end,
   keys = {
     {
+      "<leader>,",
+      function()
+        Snacks.picker.buffers()
+      end,
+      desc = "Switch Buffer",
+    },
+    {
+      "<leader>:",
+      function()
+        Snacks.picker.command_history()
+      end,
+      desc = "Command History",
+    },
+    {
+      "<leader>fb",
+      function()
+        Snacks.picker.buffers()
+      end,
+      desc = "Find Buffers",
+    },
+    {
+      "<leader>fc",
+      function()
+        Snacks.picker.files({ cwd = vim.fn.stdpath("config") })
+      end,
+      desc = "Find Config File",
+    },
+    {
+      "<leader>fg",
+      function()
+        Snacks.picker.git_files()
+      end,
+      desc = "Find Git Files",
+    },
+    {
+      "<leader>fh",
+      function()
+        Snacks.picker.help()
+      end,
+      desc = "Help Pages",
+    },
+    {
+      "<leader>fm",
+      function()
+        Snacks.picker.marks()
+      end,
+      desc = "Find Marks",
+    },
+    {
+      "<leader>fo",
+      function()
+        Snacks.picker.recent()
+      end,
+      desc = "Recent Files",
+    },
+    {
+      "<leader>fO",
+      function()
+        Snacks.picker.recent({ filter = { cwd = true } })
+      end,
+      desc = "Recent Files (cwd)",
+    },
+    {
       "<leader>fp",
       function()
         Snacks.picker.projects()
       end,
       desc = "Projects",
+    },
+    {
+      "<leader>gc",
+      function()
+        Snacks.picker.git_log()
+      end,
+      desc = "Git Commits",
+    },
+    {
+      "<leader>gs",
+      function()
+        Snacks.picker.git_status()
+      end,
+      desc = "Git Status",
+    },
+    {
+      '<leader>s"',
+      function()
+        Snacks.picker.registers()
+      end,
+      desc = "Registers",
+    },
+    {
+      "<leader>sa",
+      function()
+        Snacks.picker.autocmds()
+      end,
+      desc = "Auto Commands",
+    },
+    {
+      "<leader>sb",
+      function()
+        Snacks.picker.lines()
+      end,
+      desc = "Buffer Lines",
+    },
+    {
+      "<leader>sc",
+      function()
+        Snacks.picker.command_history()
+      end,
+      desc = "Command History",
+    },
+    {
+      "<leader>sC",
+      function()
+        Snacks.picker.commands()
+      end,
+      desc = "Commands",
+    },
+    {
+      "<leader>sd",
+      function()
+        Snacks.picker.diagnostics_buffer()
+      end,
+      desc = "Document Diagnostics",
+    },
+    {
+      "<leader>sD",
+      function()
+        Snacks.picker.diagnostics()
+      end,
+      desc = "Workspace Diagnostics",
+    },
+    {
+      "<leader>sg",
+      function()
+        Snacks.picker.grep({ cwd = LazyVim.root() })
+      end,
+      desc = "Grep (Root Dir)",
+    },
+    {
+      "<leader>sG",
+      function()
+        Snacks.picker.grep({ cwd = vim.uv.cwd() })
+      end,
+      desc = "Grep (cwd)",
+    },
+    {
+      "<leader>sH",
+      function()
+        Snacks.picker.highlights()
+      end,
+      desc = "Search Highlight Groups",
+    },
+    {
+      "<leader>sj",
+      function()
+        Snacks.picker.jumps()
+      end,
+      desc = "Jumplist",
+    },
+    {
+      "<leader>sk",
+      function()
+        Snacks.picker.keymaps()
+      end,
+      desc = "Key Maps",
+    },
+    {
+      "<leader>sl",
+      function()
+        Snacks.picker.loclist()
+      end,
+      desc = "Location List",
+    },
+    {
+      "<leader>sM",
+      function()
+        Snacks.picker.man()
+      end,
+      desc = "Man Pages",
+    },
+    {
+      "<leader>sm",
+      function()
+        Snacks.picker.marks()
+      end,
+      desc = "Jump to Mark",
+    },
+    {
+      "<leader>sR",
+      function()
+        Snacks.picker.resume()
+      end,
+      desc = "Resume",
+    },
+    {
+      "<leader>sq",
+      function()
+        Snacks.picker.qflist()
+      end,
+      desc = "Quickfix List",
+    },
+    {
+      "<leader>ss",
+      function()
+        Snacks.picker.lsp_symbols({ filter = LazyVim.config.kind_filter })
+      end,
+      desc = "Goto Symbol",
+    },
+    {
+      "<leader>sS",
+      function()
+        Snacks.picker.lsp_workspace_symbols({ filter = LazyVim.config.kind_filter })
+      end,
+      desc = "Goto Symbol (Workspace)",
+    },
+    {
+      "<leader>sw",
+      function()
+        Snacks.picker.grep_word({ cwd = LazyVim.root() })
+      end,
+      mode = { "n", "x" },
+      desc = "Visual selection or word (Root Dir)",
+    },
+    {
+      "<leader>sW",
+      function()
+        Snacks.picker.grep_word({ cwd = vim.uv.cwd() })
+      end,
+      mode = { "n", "x" },
+      desc = "Visual selection or word (cwd)",
+    },
+    {
+      "<leader>uC",
+      function()
+        Snacks.picker.colorschemes()
+      end,
+      desc = "Colorscheme with Preview",
     },
   },
 }

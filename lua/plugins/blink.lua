@@ -17,7 +17,7 @@ return {
       version = not vim.g.lazyvim_blink_main and "*",
     },
   },
-  event = "InsertEnter",
+  event = { "InsertEnter", "CmdlineEnter" },
 
   ---@module 'blink.cmp'
   ---@type blink.cmp.Config
@@ -41,6 +41,11 @@ return {
         -- experimental auto-brackets support
         auto_brackets = {
           enabled = true,
+        },
+      },
+      list = {
+        selection = {
+          auto_insert = false,
         },
       },
       menu = {
@@ -70,6 +75,8 @@ return {
     keymap = {
       -- preset = "super-tab",
       preset = "enter",
+      ["<C-p>"] = { "select_prev", "fallback" },
+      ["<C-n>"] = { "select_next", "fallback" },
       ["<C-y>"] = { "select_and_accept" },
       ["<Tab>"] = {
         function(cmp)
@@ -108,16 +115,13 @@ return {
 
     -- add ai_accept to <Tab> key
     if not opts.keymap["<Tab>"] then
-      vim.notify("hello tjy")
       if opts.keymap.preset == "super-tab" then -- super-tab
         opts.keymap["<Tab>"] = {
           require("blink.cmp.keymap.presets")["super-tab"]["<Tab>"][1],
           LazyVim.cmp.map({ "snippet_forward", "ai_accept" }),
           "fallback",
         }
-        vim.notify("hello tjy super-tab")
       else -- other presets
-        vim.notify("hello tjy2")
         opts.keymap["<Tab>"] = {
           LazyVim.cmp.map({ "snippet_forward", "ai_accept" }),
           "fallback",

@@ -4,6 +4,52 @@
 local autocmds = require("config.autocmds")
 local map = vim.keymap.set
 
+local function load_lazy_plugin(plugin)
+  if not plugin then
+    return
+  end
+  local ok, lazy = pcall(require, "lazy")
+  if ok then
+    pcall(lazy.load, { plugins = { plugin } })
+  end
+end
+
+local function run_optional_command(command, opts)
+  opts = opts or {}
+  return function()
+    load_lazy_plugin(opts.plugin)
+    local cmd_name = command:match("^([%w_]+)")
+    if cmd_name and vim.fn.exists(":" .. cmd_name) ~= 2 then
+      vim.notify(opts.missing or ("命令不可用: " .. cmd_name), vim.log.levels.WARN)
+      return
+    end
+    vim.cmd(command)
+  end
+end
+
+local function get_neotree_path()
+  local ok_neo, neo_manager = pcall(require, "neo-tree.sources.manager")
+  if not ok_neo then
+    return nil
+  end
+  local state = neo_manager.get_state("filesystem")
+  return state and state.path or nil
+end
+
+local function pick_terminal_buffers()
+  Snacks.picker.buffers({
+    hidden = true,
+    current = false,
+    nofile = true,
+    title = "终端缓冲区",
+    filter = {
+      filter = function(item)
+        return item.buftype == "terminal"
+      end,
+    },
+  })
+end
+
 map("n", ";", ":", { noremap = true, silent = false })
 -- Buffer delete with smart split handling
 map("n", "<leader>bd", function()
@@ -142,61 +188,78 @@ map("n", "<leader>fs", function()
   end
 end, { desc = "Open shell config" })
 
--- telescope
-map("n", "<leader>fW", "<cmd>Telescope live_grep<CR>", { desc = "telescope live grep" })
-map("n", "<leader>fb", "<cmd>Telescope buffers<CR>", { desc = "telescope find buffers" })
-map("n", "<leader>fh", "<cmd>Telescope help_tags<CR>", { desc = "telescope help page" })
-map("n", "<leader>fm", "<cmd>Telescope marks<CR>", { desc = "telescope find marks" })
-map("n", "<leader>fo", "<cmd>Telescope oldfiles<CR>", { desc = "telescope find oldfiles" })
-map("n", "<leader>fz", "<cmd>Telescope current_buffer_fuzzy_find<CR>", { desc = "telescope find in current buffer" })
-map("n", "<leader>cm", "<cmd>Telescope git_commits<CR>", { desc = "telescope git commits" })
-map("n", "<leader>gt", "<cmd>Telescope git_status<CR>", { desc = "telescope git status" })
-map("n", "<leader>pt", "<cmd>Telescope terms<CR>", { desc = "telescope pick hidden term" })
+-- search
+map("n", "<leader>fz", function()
+  Snacks.picker.lines({
+    title = "当前缓冲区精确搜索",
+    matcher = {
+      fuzzy = false,
+    },
+  })
+end, { desc = "snacks exact find in current buffer" })
+map("n", "<leader>cm", function() Snacks.picker.git_log() end, { desc = "git commits" })
+map("n", "<leader>gt", function() Snacks.picker.git_status() end, { desc = "git status" })
+map("n", "<leader>pt", pick_terminal_buffers, { desc = "pick hidden terminal" })
 
 -- Snacks: 在项目中查找所有文件（包含隐藏和被.gitignore忽略）
 map("n", "<leader><space>", function()
-  -- 获取 Neotree 的当前路径
-  local neo_tree_path = nil
-  local ok_neo, neo_manager = pcall(require, "neo-tree.sources.manager")
-  if ok_neo then
-    local state = neo_manager.get_state("filesystem")
-    if state and state.path then
-      neo_tree_path = state.path
-    end
-  end
+  local neo_tree_path = get_neotree_path()
 
   local ok, Snacks = pcall(require, "snacks")
-  if not ok then
-    vim.notify("Snacks 未加载，使用 Telescope 代替", vim.log.levels.WARN)
-    require("telescope.builtin").find_files({
+  if ok then
+    Snacks.picker.files({
       cwd = neo_tree_path,
       hidden = true,
-      no_ignore = true,
+      ignored = true,
+      follow = true,
     })
     return
   end
 
-  -- 使用 Neotree 的路径作为搜索目录
-  Snacks.picker.files({
-    cwd = neo_tree_path,
-    hidden = true,
-    ignored = true,
-    follow = true,
-  })
+  local ok_fzf, fzf = pcall(require, "fzf-lua")
+  if ok_fzf then
+    fzf.files({
+      cwd = neo_tree_path,
+      prompt_title = "Find Files in current Neo-tree Path",
+      fd_opts = "--type f --hidden --no-ignore --exclude .git",
+    })
+    return
+  end
+
+  vim.notify("Snacks 和 fzf-lua 都未加载", vim.log.levels.ERROR)
 end, { desc = "Find files (all, include .gitignore)" })
 
--- map("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "telescope find files" })
--- map(
---   "n",
---   "<leader>fa",
---   "<cmd>Telescope find_files follow=true no_ignore=true hidden=true<CR>",
---   { desc = "telescope find all files" }
--- )
+map("n", "<leader>sp", function()
+  local current_file = vim.api.nvim_buf_get_name(0)
+  local current_dir = current_file ~= "" and vim.fs.dirname(vim.fs.normalize(current_file)) or vim.uv.cwd()
 
--- fzf
--- map('n', '<leader>fw', "<cmd>lua require('fzf-lua').live_grep()<CR>")
--- map('n', '<leader>ff', "<cmd>lua require('fzf-lua').files()<CR>")
--- map('n', '<leader>fo', "<cmd>lua require('fzf-lua').oldfiles()<CR>")
+  Snacks.picker.grep({
+    cwd = current_dir,
+    hidden = true,
+    exclude = { ".git/*", "node_modules/*", "*.lock" },
+    title = "Search in: " .. vim.fn.fnamemodify(current_dir, ":t"),
+  })
+end, { desc = "Search in Current File's Directory" })
+
+map("n", "<leader>sP", function()
+  local root = LazyVim.root() or vim.uv.cwd()
+  local current_dir = vim.uv.cwd()
+  local current_file = vim.fn.expand("%:p")
+  local info = string.format(
+    [[
+Project Root: %s
+Current Directory: %s
+Current File: %s
+Search Scope: %s
+]],
+    root or "Not in a project",
+    current_dir,
+    current_file,
+    root or current_dir
+  )
+
+  vim.notify(info, vim.log.levels.INFO, { title = "Project Info" })
+end, { desc = "Show Project Info" })
 
 -- terminal
 map("n", "<A-h>", function()
@@ -214,8 +277,18 @@ end, { desc = "Format file or range (in visual mode)" })
 map("n", "<leader>h", "<cmd>lua require'hop'.hint_lines()<CR>", { desc = "hop line" })
 
 -- diffview
-map("n", "<leader>gdo", "<cmd>DiffviewOpen<CR>", { desc = "diffview open" })
-map("n", "<leader>gdc", "<cmd>DiffviewClose<CR>", { desc = "diffview close" })
+map(
+  "n",
+  "<leader>gdo",
+  run_optional_command("DiffviewOpen", { plugin = "diffview.nvim", missing = "Diffview 未安装" }),
+  { desc = "Diffview Open" }
+)
+map(
+  "n",
+  "<leader>gdc",
+  run_optional_command("DiffviewClose", { plugin = "diffview.nvim", missing = "Diffview 未安装" }),
+  { desc = "Diffview Close" }
+)
 
 --marks
 -- delete all marks
@@ -262,24 +335,48 @@ vim.api.nvim_set_keymap("n", "<leader>dm", "", {
 -- clangd
 map("n", "<leader>gh", "<cmd>ClangdSwitchSourceHeader<CR>", { desc = "Switch Source/Header" })
 
--- preivew
-map("n", "gp", "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", { desc = "Goto Definition" })
-map("n", "gl", "<cmd>lua require('goto-preview').goto_preview_declaration()<CR>", { desc = "Goto Declaration" })
-map("n", "q", "<cmd>lua require('goto-preview').close_all_win()<CR>", { desc = "Close All" })
-
 -- call graph
-map("n", "<leader>cg", "<cmd>CallGraphR<CR>", { desc = "Generate Call Graph" })
+map(
+  "n",
+  "<leader>cg",
+  run_optional_command("CallGraphR", { missing = "Call graph 命令不可用" }),
+  { desc = "Generate Call Graph" }
+)
 
 --avante
-map("n", "<leader>al", "<cmd>AvanteClear history<CR>", { desc = "Clear Avgante history" })
+map(
+  "n",
+  "<leader>al",
+  run_optional_command("AvanteClear history", { plugin = "avante.nvim", missing = "Avante 未安装" }),
+  { desc = "Clear Avante history" }
+)
 
 -- copilot (cmd = "Copilot" 会在执行命令时自动加载插件)
-map("n", "<leader>ct", "<cmd>Copilot toggle<CR>", { desc = "Toggle Copilot" })
-map("n", "<leader>cs", "<cmd>Copilot status<CR>", { desc = "Copilot Status" })
-map("n", "<leader>cp", "<cmd>Copilot panel<CR>", { desc = "Copilot Panel" })
+map(
+  "n",
+  "<leader>ct",
+  run_optional_command("Copilot toggle", { plugin = "copilot.lua", missing = "Copilot 未安装" }),
+  { desc = "Toggle Copilot" }
+)
+map(
+  "n",
+  "<leader>cp",
+  run_optional_command("Copilot panel", { plugin = "copilot.lua", missing = "Copilot 未安装" }),
+  { desc = "Copilot Panel" }
+)
 
 --project
-map("n", "<leader>pp", "<cmd>ProjectRoot<CR>", { desc = "Project Root" })
+map("n", "<leader>pp", function()
+  local root = LazyVim.root() or vim.uv.cwd()
+
+  if not root or root == "" then
+    vim.notify("无法识别项目根目录", vim.log.levels.WARN)
+    return
+  end
+
+  vim.cmd("cd " .. vim.fn.fnameescape(root))
+  vim.notify("Project root: " .. root, vim.log.levels.INFO)
+end, { desc = "Project Root" })
 map("n", "<leader>pa", function()
   -- 添加项目，但不使用 git root
   autocmds.add_project(false, false)

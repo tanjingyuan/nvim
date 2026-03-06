@@ -20,7 +20,7 @@ return {
       },
     })
   end,
-  config = function()
+  config = function(_, opts)
     -- older fzf-lua expects this helper; ensure stub exists on nightly builds
     local stub = function() end
 
@@ -100,8 +100,6 @@ return {
       callback = set_ctx_stubs,
     })
 
-    require("fzf-lua").setup({
-      "telescope",
-    })
+    require("fzf-lua").setup(opts or {})
   end,
 }

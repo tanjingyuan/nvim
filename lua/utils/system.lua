@@ -37,6 +37,14 @@ function M.paste()
   }
 end
 
+local function disable_terminal_flow_control()
+  if vim.fn.executable("stty") ~= 1 or vim.env.TERM == "dumb" then
+    return
+  end
+
+  vim.fn.jobstart({ "sh", "-c", "stty -ixon </dev/tty >/dev/tty 2>/dev/null" }, { detach = true })
+end
+
 function M.setup()
   -- Ensure Mason-installed tools are available on PATH
   local mason_bin = vim.fn.stdpath("data") .. "/mason/bin"
@@ -46,6 +54,8 @@ function M.setup()
       vim.env.PATH = mason_bin .. ":" .. current_path
     end
   end
+
+  disable_terminal_flow_control()
 
   if M.is_remote() then
     vim.g.autoformat = false
