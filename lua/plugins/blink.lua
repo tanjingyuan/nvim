@@ -54,8 +54,11 @@ return {
         },
       },
       documentation = {
-        auto_show = true,
+        auto_show = false,
         auto_show_delay_ms = 200,
+        window = {
+          max_height = 15,
+        },
       },
       ghost_text = {
         enabled = vim.g.ai_cmp,
