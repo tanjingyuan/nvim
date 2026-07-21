@@ -16,7 +16,7 @@ function M.dameon_highlights()
   vim.cmd("highlight CursorLine guibg=" .. cursorline_bg) -- everforest bg2，更明显但不刺眼
 
   -- 括号匹配高亮（matchparen 使用 MatchParen 组）
-  vim.api.nvim_set_hl(0, "MatchParen", { fg = "#ffb6c1", bg = "#ff5555", bold = true })
+  -- vim.api.nvim_set_hl(0, "MatchParen", { fg = "#ffb6c1", bg = "#ff5555", bold = true })
 
   -- 当前单词/同词引用高亮。比 CursorLine 再亮一档，避免两者糊在一起。
   for _, group in ipairs({

@@ -9,13 +9,13 @@ return {
     {
       "<leader>sr",
       function()
-        if not vim.fn.executable("rg") then
+        if vim.fn.executable("rg") ~= 1 then
           vim.notify("ripgrep not found, please install it!", vim.log.levels.ERROR)
           return
         end
         local grug = require("grug-far")
-        local current_file = vim.fn.expand('%:t')
-        local current_dir = vim.fn.expand('%:p:h')
+        local current_file = vim.fn.expand("%:t")
+        local current_dir = vim.fn.expand("%:p:h")
         grug.open({
           -- stay cache buffer
           -- transient = true,

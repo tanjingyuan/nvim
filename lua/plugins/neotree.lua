@@ -81,7 +81,7 @@ return {
                 vim.cmd("wincmd l")
               end
               -- 在最右侧打开垂直分割窗口
-              vim.cmd("vsplit " .. node.path)
+              vim.cmd("vsplit " .. vim.fn.fnameescape(node.path))
               -- 移动到新窗口（现在是最右侧）
               vim.cmd("wincmd l")
               -- 设置窗口为固定缓冲区（Neovim 0.10+）
@@ -114,7 +114,7 @@ return {
                 vim.cmd("wincmd j")
               end
               -- 在最底部打开水平分割窗口
-              vim.cmd("split " .. node.path)
+              vim.cmd("split " .. vim.fn.fnameescape(node.path))
               -- 移动到新窗口（现在是最底部）
               vim.cmd("wincmd j")
               -- 设置窗口为固定缓冲区
@@ -172,7 +172,7 @@ return {
               require("neo-tree.command").execute({
                 dir = parent,
                 reveal = true,
-                reveal_file = current_root  -- 定位到原来的目录
+                reveal_file = current_root, -- 定位到原来的目录
               })
             else
               vim.notify("已到达根目录", vim.log.levels.INFO)
@@ -190,7 +190,7 @@ return {
               require("neo-tree.command").execute({
                 dir = parent,
                 reveal = true,
-                reveal_file = current_root
+                reveal_file = current_root,
               })
             else
               vim.notify("已到达根目录", vim.log.levels.INFO)

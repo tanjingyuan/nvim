@@ -144,9 +144,12 @@ vim.keymap.set("n", "<leader>cd", function()
   local buf_dir = vim.fn.fnamemodify(buf_name, ":p:h")
 
   -- 打开一个新的终端并 cd 到 buffer 所在目录
-  vim.cmd("ToggleTerm direction=float")
-  -- vim.cmd("ToggleTerm direction=horizontal")
-  vim.cmd("TermExec cmd='cd " .. buf_dir .. "'")
+  local ok_toggleterm, toggleterm = pcall(require, "toggleterm")
+  if ok_toggleterm then
+    toggleterm.toggle(nil, nil, buf_dir, "float")
+  else
+    vim.cmd("ToggleTerm direction=float dir=" .. vim.fn.fnameescape(buf_dir))
+  end
 
   -- 设置当前终端 buffer 的局部键映射，按 'q' 关闭终端
   vim.api.nvim_create_autocmd("TermEnter", {
@@ -182,7 +185,7 @@ map("n", "<leader>fs", function()
 
   -- 检查文件是否存在
   if vim.fn.filereadable(config_file) == 1 then
-    vim.cmd("edit " .. config_file)
+    vim.cmd("edit " .. vim.fn.fnameescape(config_file))
   else
     vim.notify("配置文件不存在: " .. config_file, vim.log.levels.ERROR)
   end
@@ -197,8 +200,12 @@ map("n", "<leader>fz", function()
     },
   })
 end, { desc = "snacks exact find in current buffer" })
-map("n", "<leader>cm", function() Snacks.picker.git_log() end, { desc = "git commits" })
-map("n", "<leader>gt", function() Snacks.picker.git_status() end, { desc = "git status" })
+map("n", "<leader>cm", function()
+  Snacks.picker.git_log()
+end, { desc = "git commits" })
+map("n", "<leader>gt", function()
+  Snacks.picker.git_status()
+end, { desc = "git status" })
 map("n", "<leader>pt", pick_terminal_buffers, { desc = "pick hidden terminal" })
 
 -- Snacks: 在项目中查找所有文件（包含隐藏和被.gitignore忽略）
@@ -272,9 +279,6 @@ vim.keymap.del({ "v" }, "<leader>cf")
 map("v", "<leader>cf", function()
   require("conform").format({ async = true, lsp_fallback = true })
 end, { desc = "Format file or range (in visual mode)" })
-
--- hop
-map("n", "<leader>h", "<cmd>lua require'hop'.hint_lines()<CR>", { desc = "hop line" })
 
 -- diffview
 map(

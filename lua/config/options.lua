@@ -43,6 +43,7 @@ local function configure_diagnostics()
       source = "if_many",
       prefix = "●",
       spacing = 2,
+      virt_text_pos = "right_align",
     },
     float = {
       border = "rounded",
