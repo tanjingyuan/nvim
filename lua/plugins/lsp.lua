@@ -3,7 +3,8 @@ return {
   opts = function(_, opts)
     opts.servers = opts.servers or {}
     opts.servers["*"] = opts.servers["*"] or {}
-    opts.servers["*"].capabilities = vim.tbl_deep_extend("force", opts.servers["*"].capabilities or {}, {
+    local defaults = opts.servers["*"]
+    defaults.capabilities = vim.tbl_deep_extend("force", defaults.capabilities or {}, {
       textDocument = {
         foldingRange = {
           dynamicRegistration = false,
@@ -16,16 +17,25 @@ return {
     -- 启用 shell 的 LSP（bash-language-server）
     -- 兼容“单文件/非 git 目录”：找不到 root marker 时回退到文件所在目录
     opts.servers.bashls = vim.tbl_deep_extend("force", opts.servers.bashls or {}, {
-      root_dir = function(bufnr, on_dir)
-        local fname = vim.api.nvim_buf_get_name(bufnr)
+      root_dir = function(fname, on_dir)
+        -- Legacy lspconfig passes (filename, bufnr); vim.lsp.config passes (bufnr, callback).
+        if type(fname) == "number" then
+          fname = vim.api.nvim_buf_get_name(fname)
+        end
         local ok, util = pcall(require, "lspconfig.util")
         local root = ok and util.root_pattern(".git")(fname) or nil
-        on_dir(root or vim.fs.dirname(fname))
+        root = root or vim.fs.dirname(fname)
+        if type(on_dir) == "function" then
+          on_dir(root)
+        else
+          return root
+        end
       end,
     })
 
-    opts.servers["*"].keys = opts.servers["*"].keys or {}
-    local keys = opts.servers["*"].keys
+    -- LazyVim 16 configures shared LSP capabilities and keymaps via the wildcard server.
+    defaults.keys = defaults.keys or {}
+    local keys = defaults.keys
 
     keys[#keys + 1] = { "<C-k>", false, mode = "i" }
     keys[#keys + 1] = { "<leader>ch", vim.lsp.buf.signature_help, desc = "Show Signature Help" }
@@ -34,10 +44,16 @@ return {
     keys[#keys + 1] = {
       "<leader>cr",
       function()
-        local params = vim.lsp.util.make_position_params()
-        params.newName = vim.fn.input("New Name: ", vim.fn.expand("<cword>"))
-        if not (params.newName and #params.newName > 0) then
+        local win = vim.api.nvim_get_current_win()
+        local new_name = vim.fn.input("New Name: ", vim.fn.expand("<cword>"))
+        if new_name == "" then
           return
+        end
+
+        local function params(client)
+          local position = vim.lsp.util.make_position_params(win, client.offset_encoding)
+          position.newName = new_name
+          return position
         end
 
         vim.lsp.buf_request(0, "textDocument/rename", params, function(err, result, ctx, _)
@@ -51,6 +67,9 @@ return {
           end
 
           local client = vim.lsp.get_client_by_id(ctx.client_id)
+          if not client then
+            return
+          end
           if result.documentChanges then
             for _, change in pairs(result.documentChanges) do
               if change.edits then

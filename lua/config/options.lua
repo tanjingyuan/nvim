@@ -4,7 +4,7 @@
 
 vim.o.termguicolors = true
 vim.o.foldcolumn = "1" -- '0' is not bad
-vim.o.foldlevel = 99   -- Using ufo provider need a large value, feel free to decrease the value
+vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
 vim.o.foldlevelstart = 99
 vim.o.foldenable = true
 vim.g.lazyvim_picker = "snacks"
@@ -36,7 +36,15 @@ vim.filetype.add({
 })
 
 local function configure_diagnostics()
+  local signs = { text = {}, numhl = {} }
+  for name, text in pairs({ Error = "E", Warn = "W", Info = "I", Hint = "H" }) do
+    local severity = vim.diagnostic.severity[name:upper()]
+    signs.text[severity] = text
+    signs.numhl[severity] = "DiagnosticLineNr" .. name
+  end
+
   vim.diagnostic.config({
+    signs = signs,
     severity_sort = true,
     virtual_text = {
       severity = { min = vim.diagnostic.severity.ERROR },
@@ -50,12 +58,6 @@ local function configure_diagnostics()
       source = "always",
     },
   })
-
-  local signs = { Error = "E", Warn = "W", Info = "I", Hint = "H" }
-  for name, text in pairs(signs) do
-    local hl = "DiagnosticSign" .. name
-    vim.fn.sign_define(hl, { text = text, texthl = hl, numhl = "DiagnosticLineNr" .. name })
-  end
 end
 
 configure_diagnostics()

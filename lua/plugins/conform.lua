@@ -9,7 +9,7 @@ return {
         sh = { "shfmt" },
         cpp = { "clang-format" },
         c = { "clang-format" },
-        cmake = { "cmake-format" },
+        cmake = { "cmake_format" },
         yaml = { "yamlfix" },
         python = { "black" },
       }
@@ -26,6 +26,7 @@ return {
       vim.list_extend(opts.ensure_installed, {
         "stylua",
         "shfmt",
+        "tree-sitter-cli", -- 新版 Treesitter 使用 Mason 管理的 CLI，避免依赖系统旧版本
         "clang-format",
         "cmakelang", -- 包含 cmake-format
         "yamlfix",

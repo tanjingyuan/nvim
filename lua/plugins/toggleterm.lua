@@ -4,7 +4,8 @@ return {
   config = function()
     local user_shell = vim.env.SHELL or "/bin/bash"
     vim.opt.shell = user_shell
-    vim.opt.shellcmdflag = "-ic"
+    -- Background commands should not load interactive shell plugins.
+    vim.opt.shellcmdflag = "-c"
     local shell_with_login = user_shell .. " -l"
     require("toggleterm").setup({
       direction = "horizontal",
